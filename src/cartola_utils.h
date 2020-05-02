@@ -1,0 +1,11 @@
+#ifdef CARTOLA_UTILS_H
+#define CARTOLA_UTILS_H
+
+#define MAX_GOLEIROS 100
+#define MAX_LATERAIS 150
+#define MAX_ZAGUEIROS 150
+#define MAX_MEIAS 300
+#define MAX_ATACANTES 300
+#define MAX_TECNICOS 20
+
+#endif
