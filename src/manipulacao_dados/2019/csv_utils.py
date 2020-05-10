@@ -56,3 +56,28 @@ with open('dados_2019.csv', 'w') as f:
     writer.writeheader()
     for row in sortedlist:
         writer.writerow(row)
+
+
+r = csv.reader(open('dados_2019.csv'))
+lines = list(r)
+for i in range(1, len(lines)):
+    if(lines[i][14] == 'NA' or lines[i][14] == ''): lines[i][14] = '0'
+    if(lines[i][15] == 'NA' or lines[i][15] == ''): lines[i][15] = '0'
+    if(lines[i][16] == 'NA' or lines[i][16] == ''): lines[i][16] = '0'
+    if(lines[i][17] == 'NA' or lines[i][17] == ''): lines[i][17] = '0'
+    if(lines[i][18] == 'NA' or lines[i][18] == ''): lines[i][18] = '0'
+    if(lines[i][19] == 'NA' or lines[i][19] == ''): lines[i][19] = '0'
+    if(lines[i][20] == 'NA' or lines[i][20] == ''): lines[i][20] = '0'
+    if(lines[i][21] == 'NA' or lines[i][21] == ''): lines[i][21] = '0'
+    if(lines[i][22] == 'NA' or lines[i][22] == ''): lines[i][22] = '0'
+    if(lines[i][23] == 'NA' or lines[i][23] == ''): lines[i][23] = '0'
+    if(lines[i][24] == 'NA' or lines[i][24] == ''): lines[i][24] = '0'
+    if(lines[i][25] == 'NA' or lines[i][25] == ''): lines[i][25] = '0'
+    if(lines[i][26] == 'NA' or lines[i][26] == ''): lines[i][26] = '0'
+    if(lines[i][27] == 'NA' or lines[i][27] == ''): lines[i][27] = '0'
+    if(lines[i][28] == 'NA' or lines[i][28] == ''): lines[i][28] = '0'
+    if(lines[i][29] == 'NA' or lines[i][29] == ''): lines[i][29] = '0'
+    if(lines[i][30] == 'NA' or lines[i][30] == ''): lines[i][30] = '0'
+    if(lines[i][31] == 'NA' or lines[i][31] == ''): lines[i][31] = '0'
+writer = csv.writer(open('dados_2019.csv', 'w'))
+writer.writerows(lines)
