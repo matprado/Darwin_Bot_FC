@@ -1,7 +1,7 @@
+#include "cartola_utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "cartola_utils.h"
 
 struct rodada{
     int id;
@@ -32,7 +32,7 @@ struct atleta{
     Tipos de status:
     'P' -> provável
     'C' -> contundido
-    'N' -> nulo
+    'S' -> suspenso
     */
     char status[MAX_RODADAS];
     int jogou_rodada[MAX_RODADAS]; //vetor de "boolean" para indicar se o atleta participou da rodada x ou não
@@ -87,12 +87,10 @@ int ler_csv_campeonato(){
     //LEMBRA DE LIMPAR DEPOIS
     
     for(int i=0; i<MAX_RODADAS; i++){
-
         rodadas[i].id = i;
-
     }
 
-    atletas = (Atleta **) malloc(MAX_ATLETAS * sizeof(Atleta *));
+    atletas = (Atleta **) calloc(MAX_ATLETAS, sizeof(Atleta *));
     for(int i=0; i<MAX_ATLETAS; i++){
         atletas[i] = (Atleta *) calloc(1, sizeof(Atleta));
     }
@@ -106,11 +104,16 @@ int ler_csv_campeonato(){
     -ORDENADO PRIMEIRAMENTE PELO ID DO ATLETA
     -ORDENADO SEGUNDAMENTE PELA RODADA
     */
-    while(fscanf(csv, "%*c")){
-        
+    char teste;
+    int j=0;
+
+    while((teste = fgetc(csv)) != EOF){
+
         fseek(csv, -1, SEEK_CUR);
 
         ler_linha_csv(csv);
+
+        printf("linhas: %d, atletas: %d\n", ++j, n_atletas);
         
     }
 
@@ -125,97 +128,112 @@ void ler_linha_csv(FILE *csv){
 
     char pos[4];
     fscanf(csv, "%[^,]%*c", pos);
+    //printf("%s ", pos);
 
     int id_clube;
     fscanf(csv, "%d%*c", &id_clube);
+    //printf("%d ", id_clube);
 
     int id_atleta;
     fscanf(csv, "%d%*c", &id_atleta);
+    //printf("%d ", id_atleta);
 
     //verifica se é um novo atleta ou não
     if(id_atleta == id_atleta_atual){
 
+        //MESMO ATLETA
         fscanf(csv, "%d%*c", &rodada);
-        atletas[n_atletas]->jogou_rodada[rodada] = 1;
+        //printf("%d ", rodada);
+        atletas[n_atletas-1]->jogou_rodada[rodada] = 1;
 
         fscanf(csv, "%*[^,]%*c");
         fscanf(csv, "%*[^,]%*c%*[^,]%*c%*[^,]%*c");
-        fscanf(csv, "%c%*[^,]%*c", &(atletas[n_atletas]->status[rodada]));
+        fscanf(csv, "%c%*[^,]%*c", &(atletas[n_atletas-1]->status[rodada]));
+        //printf("%c ", atletas[n_atletas-1]->status[rodada]);
 
-        fscanf(csv, "%f%*c", &(atletas[n_atletas]->pontos[rodada]));
-        fscanf(csv, "%f%*c", &(atletas[n_atletas]->preco[rodada]));
-        fscanf(csv, "%f%*c", &(atletas[n_atletas]->valorizacao[rodada]));
-        fscanf(csv, "%f%*c", &(atletas[n_atletas]->media[rodada]));
+        fscanf(csv, "%f%*c", &(atletas[n_atletas-1]->pontos[rodada]));
+        //printf("%f ", atletas[n_atletas-1]->pontos[rodada]);
+
+        fscanf(csv, "%f%*c", &(atletas[n_atletas-1]->preco[rodada]));
+        //printf("%f ", atletas[n_atletas-1]->preco[rodada]);
+
+        fscanf(csv, "%f%*c", &(atletas[n_atletas-1]->valorizacao[rodada]));
+        //printf("%f ", atletas[n_atletas-1]->valorizacao[rodada]);
+
+        fscanf(csv, "%f%*c", &(atletas[n_atletas-1]->media[rodada]));
+        //printf("%f ", atletas[n_atletas-1]->media[rodada]);
 
         fscanf(csv, "%*[^,]%*c");        
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->fs[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->rb[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->pe[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->fc[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->g[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->ff[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->ft[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->fd[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->dd[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->gs[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->sg[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->a[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->ca[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->i[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->cv[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->pp[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->gc[rodada]));
-        fscanf(csv, "%d%*c", &(atletas[n_atletas]->dp[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->fs[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->rb[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->pe[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->fc[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->g[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->ff[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->ft[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->fd[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->dd[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->gs[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->sg[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->a[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->ca[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->i[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->cv[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->pp[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->gc[rodada]));
+        fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->dp[rodada]));
         
         //le até o fim da linha
         fscanf(csv, "%*[^\n]%*c");
 
     }else{
         
+        //NOVO ATLETA
         id_atleta_atual = id_atleta;
         n_atletas++;
+
         //registra os dados do novo atleta
-        strcpy(atletas[n_atletas]->posicao, pos);
-        atletas[n_atletas]->id_clube = id_clube;
-        atletas[n_atletas]->id_atleta = id_atleta;
+        strcpy(atletas[n_atletas-1]->posicao, pos);
+        atletas[n_atletas-1]->id_clube = id_clube;
+        atletas[n_atletas-1]->id_atleta = id_atleta;
 
         fscanf(csv, "%d%*c", &rodada);
-        atletas[n_atletas]->jogou_rodada[rodada] = 1;
+        atletas[n_atletas-1]->jogou_rodada[rodada] = 1;
               
-        fscanf(csv, "%[^,]%*c", atletas[n_atletas]->nome);
+        fscanf(csv, "%[^,]%*c", atletas[n_atletas-1]->nome);
         //pula o slug antes e a foto depois
-        fscanf(csv, "%*[^,]%*c%[^,]%*c%*[^,]%*c", atletas[n_atletas]->apelido);
-        fscanf(csv, "%c%*[^,]%*c", &(atletas[n_atletas]->status[rodada]));
+        fscanf(csv, "%*[^,]%*c%[^,]%*c%*[^,]%*c", atletas[n_atletas-1]->apelido);
+        fscanf(csv, "%c%*[^,]%*c", &(atletas[n_atletas-1]->status[rodada]));
 
-        fscanf(csv, "%f%*c", &(atletas[n_atletas]->pontos[rodada]));
-        fscanf(csv, "%f%*c", &(atletas[n_atletas]->preco[rodada]));
-        fscanf(csv, "%f%*c", &(atletas[n_atletas]->valorizacao[rodada]));
-        fscanf(csv, "%f%*c", &(atletas[n_atletas]->media[rodada]));
+        fscanf(csv, "%f%*c", &(atletas[n_atletas-1]->pontos[rodada]));
+        fscanf(csv, "%f%*c", &(atletas[n_atletas-1]->preco[rodada]));
+        fscanf(csv, "%f%*c", &(atletas[n_atletas-1]->valorizacao[rodada]));
+        fscanf(csv, "%f%*c", &(atletas[n_atletas-1]->media[rodada]));
 
-        fscanf(csv, "%[^,]%*c", atletas[n_atletas]->nome_clube);
+        fscanf(csv, "%[^,]%*c", atletas[n_atletas-1]->nome_clube);
 
         if(rodada == 0){
             //ignora ate o fim da linha porque ja acabou os dados
             fscanf(csv, "%*[^\n]%*c");
         }else{
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->fs[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->rb[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->pe[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->fc[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->g[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->ff[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->ft[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->fd[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->dd[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->gs[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->sg[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->a[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->ca[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->i[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->cv[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->pp[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->gc[rodada]));
-            fscanf(csv, "%d%*c", &(atletas[n_atletas]->dp[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->fs[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->rb[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->pe[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->fc[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->g[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->ff[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->ft[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->fd[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->dd[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->gs[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->sg[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->a[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->ca[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->i[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->cv[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->pp[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->gc[rodada]));
+            fscanf(csv, "%d%*c", &(atletas[n_atletas-1]->dp[rodada]));
             //le até o fim da linha
             fscanf(csv, "%*[^\n]%*c");
         }
@@ -223,33 +241,89 @@ void ler_linha_csv(FILE *csv){
     }
 
     //ASSOCIA COM RODADAS
-    switch(atletas[n_atletas]->posicao[0]){
+    switch(atletas[n_atletas-1]->posicao[0]){
 
         case 't':
-            rodadas[rodada].tec[rodadas[rodada].n_tec++] = atletas[n_atletas];
+            rodadas[rodada].tec[rodadas[rodada].n_tec++] = atletas[n_atletas-1];
             break;
 
         case 'g':
-            rodadas[rodada].gol[rodadas[rodada].n_gol++] = atletas[n_atletas];
+            rodadas[rodada].gol[rodadas[rodada].n_gol++] = atletas[n_atletas-1];
             break;
 
         case 'z':
-            rodadas[rodada].zag[rodadas[rodada].n_zag++] = atletas[n_atletas];
+            rodadas[rodada].zag[rodadas[rodada].n_zag++] = atletas[n_atletas-1];
             break;
 
         case 'l':
-            rodadas[rodada].lat[rodadas[rodada].n_lat++] = atletas[n_atletas];
+            rodadas[rodada].lat[rodadas[rodada].n_lat++] = atletas[n_atletas-1];
             break;
 
         case 'm':
-            rodadas[rodada].mei[rodadas[rodada].n_mei++] = atletas[n_atletas];
+            rodadas[rodada].mei[rodadas[rodada].n_mei++] = atletas[n_atletas-1];
             break;
 
         case 'a':
-            rodadas[rodada].ata[rodadas[rodada].n_ata++] = atletas[n_atletas];
+            rodadas[rodada].ata[rodadas[rodada].n_ata++] = atletas[n_atletas-1];
             break;
 
     }
-    
+
+}
+
+void limpar_memoria_alocada(){
+
+    for(int i=0; i<MAX_ATLETAS; i++){
+        free(atletas[i]);
+    }
+    free(atletas);
+
+    free(rodadas);
+
+}
+
+void imprimir_atleta_rodada(Atleta *atleta, int rodada){
+
+    if(!atleta){
+        printf("Atleta não existe.\n");
+        return;
+    }
+
+    if(atleta->jogou_rodada[rodada]){
+        printf("Nome: %s / ", atleta->nome);
+        printf("Rodada %d / ", rodada);
+        printf("Status: %c / ", atleta->status[rodada]);
+        printf("pontos: %f / ", atleta->pontos[rodada]);
+        printf("media: %f / ", atleta->media[rodada]);
+        printf("valorização: %f / ", atleta->valorizacao[rodada]);
+        printf("preço: %f / \n", atleta->preco[rodada]);
+
+    }else{
+        printf("O Atleta %s não jogou na rodada %d.\n", atleta->nome, rodada);
+        return;
+    }
+
+}
+
+void imprimir_atleta_campeonato(Atleta *atleta){
+
+    if(!atleta){
+        printf("Atleta não existe.");
+        return;
+    }
+
+    for(int rodada=0; rodada<MAX_RODADAS; rodada++){
+        imprimir_atleta_rodada(atleta, rodada);
+    }
+
+}
+
+void imprimir_todos_atletas(){
+
+    printf("%d\n", n_atletas);
+
+    for(int atleta=0; atleta<n_atletas; atleta++){
+        imprimir_atleta_campeonato(atletas[atleta]);
+    }
 
 }
