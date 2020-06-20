@@ -6,6 +6,14 @@
 
 struct cromossomo{
 
+    int formacao;
+    // 1 : 3-2-4-1 ou 5-4-1
+    // 2 : 2-2-5-1 ou 4-5-1
+    // 3 : 3-2-3-2 ou 5-3-2
+    // 4 : 3-0-5-2 ou 3-5-2
+    // 5 : 2-2-4-2 ou 4-4-2
+    // 6 : 3-0-4-3 ou 3-4-3
+    // 7 : 2-2-3-3 ou 4-3-3
 
 };
 
@@ -47,25 +55,36 @@ void evolucao(){
 }
 
 void big_bang(){
+
     for (int i = 0; i < TAM_POP; i++){
         //pop[i] = 
     }
+
 }
 
 void geracao(){
+
     elitismo(); //Seleciona o melhor individuo para transar com todos
+
     avalia_populacao();
+
     n_geracao++;
+
 }
 
 void avalia_populacao(){
+
     int maior = -1;
     int menor = fitness[0];
     fitness_medio = 0;
     //media_pop = 0;
+
     for(int i=0; i<TAM_POP; i++){
+
         //fitness[i] = f_de_x_teto_de_casa(pop[i]);
+
         avalia_individuo(i);
+
         if(fitness[i] > maior){
             maior = fitness[i];
             the_bester = i;
@@ -75,11 +94,14 @@ void avalia_populacao(){
         }
         fitness_medio += fitness[i];
         //media_pop += pop[i];
+
     }
-    if(pop[the_bester] > the_best_of_the_bester_fitness)
+
+    /*if(pop[the_bester] > the_best_of_the_bester_fitness)
         the_best_of_the_bester_fitness = pop[the_bester];
-    fitness_medio /= TAM_POP;
+    fitness_medio /= TAM_POP;*/
     //media_pop /= TAM_POP;
+
 }
 
 void avalia_individuo(int i){
@@ -101,19 +123,25 @@ void elitismo(){
 }
 
 void crossover(){
-    pop[i] = (pop[i] + pop[the_bester]) / 2;    //Crossover(soma e divide por 2)
+    //pop[i] = (pop[i] + pop[the_bester]) / 2;    //Crossover(soma e divide por 2)
+}
+
+int crossover_formacao(int f1, int f2){
+    int f3 = f1 + f2;
+    if(f3 % 2 > 0) f3 += 1;
+    return f3 / 2;
 }
 
 void mutacao(){
-    pop[i] = pop[i] + ((rand() % VALOR_MAX - VALOR_MEIO) * taxa_mutacao); //Mutação
+    //pop[i] = pop[i] + ((rand() % VALOR_MAX - VALOR_MEIO) * taxa_mutacao); //Mutação
 }
 
 void ajuste(){
-    if(pop[i] < 0.0) pop[i] = (-pop[i]);
+   /* if(pop[i] < 0.0) pop[i] = (-pop[i]);
     if(pop[i] > VALOR_MAX){
         pop[i] = VALOR_MAX - (pop[i] - VALOR_MAX); 
         if(pop[i] < 0.0) pop[i] = (int)(-pop[i]) % VALOR_MAX;
-    }
+    }*/
 }
 
 void mutacao_dinamica(){

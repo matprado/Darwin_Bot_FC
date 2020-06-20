@@ -62,23 +62,41 @@ struct atleta{
     int dp[MAX_RODADAS]; //defesa de pênalti: +7.0
 };
 
+struct time{
+    int mando_de_campo[MAX_RODADAS];
+};
+
 
 Rodada *rodadas; //Vetor de rodadas do campeonato
 Atleta **atletas; //Vetor com todos os atletas do jogo
 int n_atletas = 0;
 int id_atleta_atual = -1;
 
+Time *times; //Vetor com todos os times
+#define MAX_ID_TIMES 356
+#define MIN_ID_TIMES 262
+
 
 int ler_csv_campeonato(){
 
     char nome_csv[100];
-    printf("Nome do arquivo .csv: ");
+    printf("Nome do arquivo .csv com dados dos atletas: ");
     scanf("%s", nome_csv);
 
     FILE *csv = fopen(nome_csv, "r");
     
     if(!csv){
         printf("ERRO! FALHA AO ABRIR ARQUIVO CSV!\n");
+        return 0;
+    }
+
+    printf("Nome do arquivo .csv com a tabela: ");
+    scanf("%s", nome_csv);
+
+    FILE *tabela = fopen(nome_csv, "r");
+    
+    if(!tabela){
+        printf("ERRO! FALHA AO ABRIR ARQUIVO DA TABELA!\n");
         return 0;
     }
 
@@ -94,6 +112,9 @@ int ler_csv_campeonato(){
     for(int i=0; i<MAX_ATLETAS; i++){
         atletas[i] = (Atleta *) calloc(1, sizeof(Atleta));
     }
+
+    //inicializa todos os times
+    times = (Time *) calloc(MAX_ID_TIMES - MIN_ID_TIMES, sizeof(Time));
 
     //LEMBRA DE LIMPAR DEPOIS 
 
@@ -113,11 +134,23 @@ int ler_csv_campeonato(){
 
         ler_linha_csv(csv);
 
-        printf("linhas: %d, atletas: %d\n", ++j, n_atletas);
+        //printf("linhas: %d, atletas: %d\n", ++j, n_atletas);
         
     }
 
     fclose(csv);
+    
+    //pula a primeira linha do csv, header
+    fscanf(tabela, "%*[^\n]%*c");
+
+    while((teste = fgetc(tabela)) != EOF){
+
+        fseek(tabela, -1, SEEK_CUR);
+
+        ler_linha_csv_tabela(tabela);
+        
+    }
+
     return 1;
 
 }
@@ -271,6 +304,20 @@ void ler_linha_csv(FILE *csv){
 
 }
 
+void ler_linha_csv_tabela(FILE *csv){
+
+    int id;
+    int rodada;
+    int mando;
+
+    fscanf(csv, "%*[^,]%*c%d%*c%d%*c%d%*[^\n]%*c", &id, &rodada, &mando);
+
+    times[id-MIN_ID_TIMES].mando_de_campo[rodada] = mando;
+
+    //printf("Time %d na rodada %d jogou em casa? %d ;\n", id, rodada, mando);
+
+}
+
 void limpar_memoria_alocada(){
 
     for(int i=0; i<MAX_ATLETAS; i++){
@@ -279,6 +326,8 @@ void limpar_memoria_alocada(){
     free(atletas);
 
     free(rodadas);
+
+    free(times);
 
 }
 

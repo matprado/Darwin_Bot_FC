@@ -23,10 +23,13 @@ void crossover();
 void mutacao();
 void ajuste();
 void mutacao_dinamica();
+
+void atualizar_grafico_fitness();
 void predacao_sintese();
 void predacao_aleatoria();
 void genocidio_total();
 void genocidio_parcial();
 void imprime_pop();
+
 
 #endif // !ALGORITMO_GENETICO_H
