@@ -3,17 +3,41 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 struct cromossomo{
 
+    //Informações adicionais sobre o time durante a simulação
+
+    float cartoletas;
+    float media_pontuacao;
+    int quant_pos[6];
+
+    //Informações genéticas: são cruzadas com outros cromossomos
+    
     int formacao;
-    // 1 : 3-2-4-1 ou 5-4-1
-    // 2 : 2-2-5-1 ou 4-5-1
-    // 3 : 3-2-3-2 ou 5-3-2
-    // 4 : 3-0-5-2 ou 3-5-2
-    // 5 : 2-2-4-2 ou 4-4-2
-    // 6 : 3-0-4-3 ou 3-4-3
-    // 7 : 2-2-3-3 ou 4-3-3
+    /* 1 : 3-2-4-1 ou 5-4-1
+       2 : 2-2-5-1 ou 4-5-1
+       3 : 3-2-3-2 ou 5-3-2
+       4 : 3-0-5-2 ou 3-5-2
+       5 : 2-2-4-2 ou 4-4-2
+       6 : 3-0-4-3 ou 3-4-3
+       7 : 2-2-3-3 ou 4-3-3*/
+
+    //Inicialmente, considera o gasto uniforme de cartoletas
+    
+    int pref_tec[3];
+    int pref_gol[3];
+    int pref_lat[3];
+    int pref_zag[3];
+    int pref_mei[3];
+    int pref_ata[3];
+
+    //Preferencia por mando de campo em cada posição
+    int mando_pos[6];
+
+    //Preferencia por jogadores valorizados ou não em cada posição
+    int valorizacao_pos[6];
 
 };
 
@@ -33,6 +57,12 @@ int the_worst;
 int tipo_predacao = 0;
 int tipo_genocidio = 0;
 double media_pop = 0;
+
+void definir_seed(time_t seed){
+
+    srand(seed);
+
+}
 
 void evolucao(){
 
@@ -57,10 +87,111 @@ void evolucao(){
 void big_bang(){
 
     for (int i = 0; i < TAM_POP; i++){
-        //pop[i] = 
+        pop[i] = criar_cromossomo_aleatorio();    
     }
 
 }
+
+Cromossomo *criar_cromossomo_aleatorio(){
+
+    Cromossomo *c = (Cromossomo *) malloc(sizeof(Cromossomo));
+
+    //No começo do game, o time tem 100 cartoletas
+    c->cartoletas = 100;
+    c->media_pontuacao = 0;
+
+    //formacao: entre 1 e 7
+    int formacao = (rand() % 7) + 1;
+
+    //Sempre temos 1 tecnico e 1 goleiro
+    c->quant_pos[0] = 1;
+    c->quant_pos[1] = 1;
+
+    //define o resto da formacao
+    definir_formacao(c, formacao);
+
+    for(int i=0; i<6; i++){
+        c->mando_pos[i] = rand() % 2;
+    }
+
+    int random = get_3_ale_dif_entre();
+
+    definir_preferencia_tec(c);
+
+    return c;
+
+}
+
+void definir_formacao(Cromossomo *c, int formacao){
+    
+    /* 1 : 3-2-4-1 ou 5-4-1
+       2 : 2-2-5-1 ou 4-5-1
+       3 : 3-2-3-2 ou 5-3-2
+       4 : 3-0-5-2 ou 3-5-2
+       5 : 2-2-4-2 ou 4-4-2
+       6 : 3-0-4-3 ou 3-4-3
+       7 : 2-2-3-3 ou 4-3-3*/
+
+    c->formacao = formacao;
+
+    switch(formacao){
+
+        case 1:
+            c->quant_pos[2] = 3;
+            c->quant_pos[3] = 2;
+            c->quant_pos[4] = 4;
+            c->quant_pos[5] = 1;
+            break;
+
+        case 2:
+            c->quant_pos[2] = 2;
+            c->quant_pos[3] = 2;
+            c->quant_pos[4] = 5;
+            c->quant_pos[5] = 1;
+            break;
+
+        case 3:
+            c->quant_pos[2] = 3;
+            c->quant_pos[3] = 2;
+            c->quant_pos[4] = 3;
+            c->quant_pos[5] = 2;
+            break;
+
+        case 4:
+            c->quant_pos[2] = 3;
+            c->quant_pos[3] = 0;
+            c->quant_pos[4] = 5;
+            c->quant_pos[5] = 2;
+            break;
+        
+        case 5:
+            c->quant_pos[2] = 2;
+            c->quant_pos[3] = 2;
+            c->quant_pos[4] = 4;
+            c->quant_pos[5] = 2;
+            break;
+
+        case 6:
+            c->quant_pos[2] = 3;
+            c->quant_pos[3] = 0;
+            c->quant_pos[4] = 4;
+            c->quant_pos[5] = 3;
+            break;
+
+        case 7:
+            c->quant_pos[2] = 2;
+            c->quant_pos[3] = 2;
+            c->quant_pos[4] = 3;
+            c->quant_pos[5] = 3;
+            break;
+
+        default:
+            printf("ERRO na formação");
+            break;
+    }
+
+}
+
 
 void geracao(){
 

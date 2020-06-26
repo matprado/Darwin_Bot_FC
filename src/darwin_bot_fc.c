@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 #include "cartola_utils.h"
 #include "algoritmo_genetico.h"
 
@@ -13,11 +14,13 @@ int read_number();
 
 int main(int argc, char *argv[]){
 
-    //if(!imprimir_menu_inicial()) return 0;
+    definir_seed(time(NULL));
+
+    if(!imprimir_menu_inicial()) return 0;
 
     if(!ler_dados_campeonato()) return 0;
 
-    //imprimir_menu_principal();
+    imprimir_menu_principal();
 
     //imprimir_todos_atletas();
 

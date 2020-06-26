@@ -376,3 +376,301 @@ void imprimir_todos_atletas(){
     }
 
 }
+
+
+int compara_media_maior(Atleta *a, Atleta *b, int rodada){
+    return (a->media[rodada] > b->media[rodada]);
+}
+
+int compara_preco_maior(Atleta *a, Atleta *b, int rodada){
+    return (a->preco[rodada] > b->preco[rodada]);
+}
+
+int compara_valorizacao_maior(Atleta *a, Atleta *b, int rodada){
+    return (a->valorizacao[rodada] > b->valorizacao[rodada]);
+}
+
+int compara_valorizacao_menor(Atleta *a, Atleta *b, int rodada){
+    return (a->valorizacao[rodada] < b->valorizacao[rodada]);
+}
+
+int compara_sg_maior(Atleta *a, Atleta *b, int rodada){
+    return (a->sg[rodada] > b->sg[rodada]);
+}
+
+int compara_gs_menor(Atleta *a, Atleta *b, int rodada){
+    return (a->gs[rodada] < b->gs[rodada]);
+}
+
+int compara_dd_maior(Atleta *a, Atleta *b, int rodada){
+    return (a->dd[rodada] > b->dd[rodada]);
+}
+
+int compara_dp_maior(Atleta *a, Atleta *b, int rodada){
+    return (a->dp[rodada] > b->dp[rodada]);
+}
+
+int compara_ca_menor(Atleta *a, Atleta *b, int rodada){
+    return (a->ca[rodada] < b->ca[rodada]);
+}
+
+int compara_fs_maior(Atleta *a, Atleta *b, int rodada){
+    return (a->fs[rodada] > b->fs[rodada]);
+}
+
+int compara_pe_menor(Atleta *a, Atleta *b, int rodada){
+    return (a->pe[rodada] < b->pe[rodada]);
+}
+
+int compara_rb_maior(Atleta *a, Atleta *b, int rodada){
+    return (a->rb[rodada] > b->rb[rodada]);
+}
+
+int compara_fc_menor(Atleta *a, Atleta *b, int rodada){
+    return (a->fc[rodada] < b->fc[rodada]);
+}
+
+int compara_ff_maior(Atleta *a, Atleta *b, int rodada){
+    return (a->ff[rodada] > b->ff[rodada]);
+}
+
+int compara_fd_maior(Atleta *a, Atleta *b, int rodada){
+    return (a->fd[rodada] > b->fd[rodada]);
+}
+
+int compara_ft_maior(Atleta *a, Atleta *b, int rodada){
+    return (a->ft[rodada] > b->ft[rodada]);
+}
+
+int compara_g_maior(Atleta *a, Atleta *b, int rodada){
+    return (a->g[rodada] > b->g[rodada]);
+}
+
+int compara_a_maior(Atleta *a, Atleta *b, int rodada){
+    return (a->a[rodada] > b->a[rodada]);
+}
+
+int compara_i_menor(Atleta *a, Atleta *b, int rodada){
+    return (a->i[rodada] < b->i[rodada]);
+}
+
+int (*get_comparador_gol(int id))(Atleta *, Atleta *, int){
+    switch (id){
+        case 1:
+            return compara_media_maior;
+        case 2:
+            return compara_preco_maior;
+        case 3:
+            return compara_valorizacao_maior;
+        case 4:
+            return compara_sg_maior;
+        case 5:
+            return compara_gs_menor;
+        case 6:
+            return compara_dd_maior;
+        case 7:
+            return compara_dp_maior;
+        case 8:
+            return compara_ca_menor;
+        case 9:
+            return compara_fs_maior;
+        case 10:
+            return compara_pe_menor;
+        case 11:
+            return compara_valorizacao_menor;
+    }
+    return NULL;
+}
+
+int get_n_ids_gol(){
+    return 11;
+}
+
+int (*get_comparador_zag(int id))(Atleta *, Atleta *, int){
+    switch (id){
+        case 1:
+            return compara_media_maior;
+        case 2:
+            return compara_preco_maior;
+        case 3:
+            return compara_valorizacao_maior;
+        case 4:
+            return compara_sg_maior;
+        case 5:
+            return compara_rb_maior;
+        case 6:
+            return compara_fc_menor;
+        case 7:
+            return compara_ca_menor;
+        case 8:
+            return compara_pe_menor;
+        case 9:
+            return compara_ff_maior;
+        case 10:
+            return compara_fd_maior;
+        case 11:
+            return compara_ft_maior;
+        case 12:
+            return compara_g_maior;
+        case 13:
+            return compara_valorizacao_menor;
+    }
+    return NULL;
+}
+
+int get_n_ids_zag(){
+    return 13;
+}
+
+int (*get_comparador_lat(int id))(Atleta *, Atleta *, int){
+    switch (id){
+        case 1:
+            return compara_media_maior;
+        case 2:
+            return compara_preco_maior;
+        case 3:
+            return compara_valorizacao_maior;
+        case 4:
+            return compara_sg_maior;
+        case 5:
+            return compara_rb_maior;
+        case 6:
+            return compara_fc_menor;
+        case 7:
+            return compara_ca_menor;
+        case 8:
+            return compara_fs_maior;
+        case 9:
+            return compara_pe_menor;
+        case 10:
+            return compara_a_maior;
+        case 11:
+            return compara_ff_maior;
+        case 12:
+            return compara_fd_maior;
+        case 13:
+            return compara_ft_maior;
+        case 14:
+            return compara_g_maior;
+        case 15:
+            return compara_valorizacao_menor;
+    }
+    return NULL;
+}
+
+int get_n_ids_lat(){
+    return 15;
+}
+
+int (*get_comparador_mei(int id))(Atleta *, Atleta *, int){
+    switch (id){
+        case 1:
+            return compara_valorizacao_menor;
+        case 2:
+            return compara_rb_maior;
+        case 3:
+            return compara_fc_menor;
+        case 4:
+            return compara_ca_menor;
+        case 5:
+            return compara_fs_maior;
+        case 6:
+            return compara_pe_menor;
+        case 7:
+            return compara_a_maior;
+        case 8:
+            return compara_ff_maior;
+        case 9:
+            return compara_fd_maior;
+        case 10:
+            return compara_ft_maior;
+        case 11:
+            return compara_g_maior;
+        case 12:
+            return compara_valorizacao_maior;
+        case 13:
+            return compara_preco_maior;
+        case 14:
+            return compara_media_maior;
+    }
+    return NULL;
+}
+
+int get_n_ids_mei(){
+    return 14;
+}
+
+int (*get_comparador_ata(int id))(Atleta *, Atleta *, int){
+    switch (id){
+        case 1:
+            return compara_valorizacao_menor;
+        case 2:
+            return compara_rb_maior;
+        case 3:
+            return compara_fc_menor;
+        case 4:
+            return compara_ca_menor;
+        case 5:
+            return compara_fs_maior;
+        case 6:
+            return compara_pe_menor;
+        case 7:
+            return compara_a_maior;
+        case 8:
+            return compara_i_menor;
+        case 9:
+            return compara_ff_maior;
+        case 10:
+            return compara_fd_maior;
+        case 11:
+            return compara_ft_maior;
+        case 12:
+            return compara_g_maior;
+        case 13:
+            return compara_valorizacao_maior;
+        case 14:
+            return compara_preco_maior;
+        case 15:
+            return compara_media_maior;
+    }
+    return NULL;
+}
+
+int get_n_ids_ata(){
+    return 15;
+}
+
+void ordena_vetor_rodada(Atleta **vet, int tam, int (*comparador)(Atleta *, Atleta *, int), int rodada){
+    merge_sort(vet, 0, tam-1, comparador, rodada);
+}
+
+void merge_sort(Atleta **vet, int ini, int fim, int (*comparador)(Atleta *, Atleta *, int), int rodada){
+	if(fim <= ini)	return;
+	int meio = (int) (ini+fim)/2;	
+	merge_sort(vet, ini, meio, comparador, rodada);
+	merge_sort(vet, meio+1, fim, comparador, rodada);
+	merge(vet, ini, meio, fim, comparador, rodada);
+}
+/*Função merge(intercala):
+ Pega dois vetores previamente ordenados e os intercala formando um só vetor ordenado*/
+void merge(Atleta **vet, int ini, int meio, int fim, int (*comparador)(Atleta *, Atleta *, int), int rodada){
+	Atleta **aux = (Atleta **) malloc((fim-ini+1) * sizeof(Atleta *));
+	int i, j, k;	
+    for(i=ini, j=meio+1, k=0; i<=meio && j<=fim; k++){	//Ordena os dois 'blocos'
+    	//QUEM EU QUERO ANTES? O MENOR OU O MAIOR?
+        if(comparador(aux[i], aux[j], rodada))
+    		aux[k] = vet[i++];
+    	else
+    		aux[k] = vet[j++];
+    }
+    while(i <= meio){  //Caso ainda haja elementos na primeira metade
+        aux[k++] = vet[i++];
+    }
+    while(j <= fim){   //Caso ainda haja elementos na segunda metade
+        aux[k++] = vet[j++];
+    }
+    for(k = ini; k <= fim; k++){//Move os elementos de volta para o vetor original
+        vet[k] = aux[k-ini];
+    }
+    free(aux);
+}

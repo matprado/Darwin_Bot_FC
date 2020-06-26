@@ -24,4 +24,39 @@ void imprimir_atleta_rodada(Atleta *atleta, int rodada);
 void imprimir_atleta_campeonato(Atleta *atleta);
 void imprimir_todos_atletas();
 
+int compara_media_maior(Atleta *a, Atleta *b, int rodada);
+int compara_preco_maior(Atleta *a, Atleta *b, int rodada);
+int compara_valorizacao_maior(Atleta *a, Atleta *b, int rodada);
+int compara_valorizacao_menor(Atleta *a, Atleta *b, int rodada);
+int compara_sg_maior(Atleta *a, Atleta *b, int rodada);
+int compara_gs_menor(Atleta *a, Atleta *b, int rodada);
+int compara_dd_maior(Atleta *a, Atleta *b, int rodada);
+int compara_dp_maior(Atleta *a, Atleta *b, int rodada);
+int compara_ca_menor(Atleta *a, Atleta *b, int rodada);
+int compara_fs_maior(Atleta *a, Atleta *b, int rodada);
+int compara_pe_menor(Atleta *a, Atleta *b, int rodada);
+int compara_rb_maior(Atleta *a, Atleta *b, int rodada);
+int compara_fc_menor(Atleta *a, Atleta *b, int rodada);
+int compara_ff_maior(Atleta *a, Atleta *b, int rodada);
+int compara_fd_maior(Atleta *a, Atleta *b, int rodada);
+int compara_ft_maior(Atleta *a, Atleta *b, int rodada);
+int compara_g_maior(Atleta *a, Atleta *b, int rodada);
+int compara_a_maior(Atleta *a, Atleta *b, int rodada);
+int compara_i_menor(Atleta *a, Atleta *b, int rodada);
+
+int (*get_comparador_gol(int id))(Atleta *, Atleta *, int);
+int get_n_ids_gol();
+int (*get_comparador_zag(int id))(Atleta *, Atleta *, int);
+int get_n_ids_zag();
+int (*get_comparador_lat(int id))(Atleta *, Atleta *, int);
+int get_n_ids_lat();
+int (*get_comparador_mei(int id))(Atleta *, Atleta *, int);
+int get_n_ids_mei();
+int (*get_comparador_ata(int id))(Atleta *, Atleta *, int);
+int get_n_ids_ata();
+
+void ordena_vetor_rodada(Atleta **vet, int tam, int (*comparador)(Atleta *, Atleta *, int), int rodada);
+void merge_sort(Atleta **vet, int ini, int fim, int (*comparador)(Atleta *, Atleta *, int), int rodada);
+void merge(Atleta **vet, int ini, int meio, int fim, int (*comparador)(Atleta *, Atleta *, int), int rodada);
+
 #endif
