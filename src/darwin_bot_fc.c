@@ -23,8 +23,9 @@ int main(int argc, char *argv[]){
     imprimir_menu_principal();
 
     //imprimir_todos_atletas();
-
-    limpar_memoria_alocada();
+    
+    limpar_memoria_alocada_cartola();
+    limpar_memoria_alocada_ag();
 
     return 0;
 }

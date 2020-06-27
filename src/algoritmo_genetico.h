@@ -20,9 +20,11 @@ void evolucao();
 
 void big_bang();
 
-Cromossomo *criar_cromossomo_aleatorio();
+void limpar_memoria_alocada_ag();
 
 void definir_formacao(Cromossomo *c, int formacao);
+
+int *get_3_aleatorios_diferentes_entre(int a, int b);
 
 void geracao();
 

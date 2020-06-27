@@ -26,18 +26,15 @@ struct cromossomo{
 
     //Inicialmente, considera o gasto uniforme de cartoletas
     
-    int pref_tec[3];
-    int pref_gol[3];
-    int pref_lat[3];
-    int pref_zag[3];
-    int pref_mei[3];
-    int pref_ata[3];
+    int *pref_tec;
+    int *pref_gol;
+    int *pref_lat;
+    int *pref_zag;
+    int *pref_mei;
+    int *pref_ata;
 
     //Preferencia por mando de campo em cada posição
-    int mando_pos[6];
-
-    //Preferencia por jogadores valorizados ou não em cada posição
-    int valorizacao_pos[6];
+    //int mando_pos[6];
 
 };
 
@@ -59,9 +56,7 @@ int tipo_genocidio = 0;
 double media_pop = 0;
 
 void definir_seed(time_t seed){
-
     srand(seed);
-
 }
 
 void evolucao(){
@@ -87,39 +82,41 @@ void evolucao(){
 void big_bang(){
 
     for (int i = 0; i < TAM_POP; i++){
-        pop[i] = criar_cromossomo_aleatorio();    
+        //No começo do game, o time tem 100 cartoletas
+        pop[i].cartoletas = 100;
+        pop[i].media_pontuacao = 0;
+
+        //formacao: entre 1 e 7
+        int formacao = (rand() % 7) + 1;
+
+        //Sempre temos 1 tecnico e 1 goleiro
+        pop[i].quant_pos[0] = 1;
+        pop[i].quant_pos[1] = 1;
+
+        //define o resto da formacao
+        definir_formacao(c, formacao);
+
+        /*for(int i=0; i<6; i++){
+            pop[i].mando_pos[i] = rand() % 2;
+        }*/
+
+        pop[i].pref_gol = get_3_aleatorios_diferentes_entre(1, get_n_ids_gol());
+        pop[i].pref_zag = get_3_aleatorios_diferentes_entre(1, get_n_ids_zag());
+        pop[i].pref_lat = get_3_aleatorios_diferentes_entre(1, get_n_ids_lat());
+        pop[i].pref_mei = get_3_aleatorios_diferentes_entre(1, get_n_ids_mei());
+        pop[i].pref_ata = get_3_aleatorios_diferentes_entre(1, get_n_ids_ata());  
     }
 
 }
 
-Cromossomo *criar_cromossomo_aleatorio(){
-
-    Cromossomo *c = (Cromossomo *) malloc(sizeof(Cromossomo));
-
-    //No começo do game, o time tem 100 cartoletas
-    c->cartoletas = 100;
-    c->media_pontuacao = 0;
-
-    //formacao: entre 1 e 7
-    int formacao = (rand() % 7) + 1;
-
-    //Sempre temos 1 tecnico e 1 goleiro
-    c->quant_pos[0] = 1;
-    c->quant_pos[1] = 1;
-
-    //define o resto da formacao
-    definir_formacao(c, formacao);
-
-    for(int i=0; i<6; i++){
-        c->mando_pos[i] = rand() % 2;
+void limpar_memoria_alocada_ag(){
+    for(int i=0; i<TAM_POP; i++){
+        free(pop[i].pref_gol);
+        free(pop[i].pref_zag);
+        free(pop[i].pref_lat);
+        free(pop[i].pref_mei);
+        free(pop[i].pref_ata);
     }
-
-    int random = get_3_ale_dif_entre();
-
-    definir_preferencia_tec(c);
-
-    return c;
-
 }
 
 void definir_formacao(Cromossomo *c, int formacao){
@@ -189,6 +186,24 @@ void definir_formacao(Cromossomo *c, int formacao){
             printf("ERRO na formação");
             break;
     }
+
+}
+
+int *get_3_aleatorios_diferentes_entre(int a, int b){
+
+    int *vet = (int *) malloc(3 * sizeof(int));
+
+    int range = b - a;
+
+    vet[0] = rand() % range;
+
+    while((vet[1] = rand() % range) == vet[0]);
+
+    while((vet[2] = rand() % range) == vet[1] || vet[2] == vet[0]);
+
+    for(int i=0; i<3; i++) vet[i] += a;
+
+    return vet;
 
 }
 

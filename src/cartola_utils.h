@@ -19,7 +19,7 @@ typedef struct time Time;
 int ler_csv_campeonato();
 void ler_linha_csv(FILE *csv);
 void ler_linha_csv_tabela(FILE *csv);
-void limpar_memoria_alocada();
+void limpar_memoria_alocada_cartola();
 void imprimir_atleta_rodada(Atleta *atleta, int rodada);
 void imprimir_atleta_campeonato(Atleta *atleta);
 void imprimir_todos_atletas();

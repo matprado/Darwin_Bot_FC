@@ -318,7 +318,7 @@ void ler_linha_csv_tabela(FILE *csv){
 
 }
 
-void limpar_memoria_alocada(){
+void limpar_memoria_alocada_cartola(){
 
     for(int i=0; i<MAX_ATLETAS; i++){
         free(atletas[i]);
