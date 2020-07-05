@@ -22,11 +22,9 @@ void big_bang();
 
 void limpar_memoria_alocada_ag();
 
-void definir_formacao(Cromossomo *c, int formacao);
+void definir_formacao(int pos, int formacao);
 
 int *get_3_aleatorios_diferentes_entre(int a, int b);
-
-void geracao();
 
 void avalia_populacao();
 

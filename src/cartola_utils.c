@@ -76,20 +76,79 @@ Time *times; //Vetor com todos os times
 #define MAX_ID_TIMES 356
 #define MIN_ID_TIMES 262
 
+float get_pontuacao_media(int quant_pos[6], int pref_gol[3], int pref_zag[3], int pref_lat[3], int pref_mei[3], int pref_ata[3]){
+ 
+
+    float pontuacao_acumulada = 0;
+
+    //para cada rodada do campeonato...
+    //pulando a primeira...
+    for(int i=1; i<MAX_RODADAS; i++){
+
+        //Escala um time e registra a pontuação na rodada
+       
+        //PULA O TÉCNICO
+
+        pontuacao_acumulada += escolhe_x_goleiros_rodada_preferencia(quant_pos[1], i+1, pref_gol);
+        pontuacao_acumulada += escolhe_x_zagueiros_rodada_preferencia(quant_pos[2], i+1, pref_zag);
+        pontuacao_acumulada += escolhe_x_laterais_rodada_preferencia(quant_pos[3], i+1, pref_lat);
+        pontuacao_acumulada += escolhe_x_meias_rodada_preferencia(quant_pos[4], i+1, pref_mei);
+        pontuacao_acumulada += escolhe_x_atacantes_rodada_preferencia(quant_pos[5], i+1, pref_ata);
+
+        printf("Prox. rodada?\n");
+        scanf("%*s");
+    }
+
+    return (pontuacao_acumulada / (MAX_RODADAS-1)); //tirando a primeira rodada
+
+}
+
+float escolhe_goleiros_rodada(int qtd_gol, int rodada, int pref[3]){
+
+    //rodadas[rodada].gol
+
+    int total = rodadas[rodada].n_gol; //quantidade total de goleiros que atuaram na rodada
+
+    Atleta *vet_aux[total];
+
+    int (*comparador)(Atleta *, Atleta *, int) = get_comparador_gol(pref[0]);
+
+    ordena_vetor_rodada(rodadas[rodada].gol, total, comparador, rodada);
+
+    int i=0, j=0, ja_escolhidos=0;
+
+    while(j < qtd_gol){
+        vet_aux[j] = rodadas[rodada].gol[j];
+        while(comparador(rodadas[rodada].gol[j], rodadas[rodada].gol[j+1], rodada)){
+            ja_escolhidos++;
+        }
+        j++;
+    }
+
+    // j == qtd_gol
+    
+    while ((j < total) && (!comparador(rodadas[rodada].gol[j-1], rodadas[rodada].gol[j], rodada))){
+        //testa com o comparador: se o teste falhar, só pode significar empate. Pega os primeiros empatados e desempata
+        vet_aux[j] = rodadas[rodada].gol[j];
+        j++;
+    }
+
+    if(j > qtd_gol){
+        //tem que desempatar com a proxima preferencia!
+        comparador = get_comparador_gol(pref[1]);
+        merge_sort(vet_aux, ja_escolhidos, j-1, comparador, rodada);
+
+        
+
+    }
+
+}
+
 
 int ler_csv_campeonato(){
 
     char nome_csv[100];
-    printf("Nome do arquivo .csv com dados dos atletas: ");
-    scanf("%s", nome_csv);
-
-    FILE *csv = fopen(nome_csv, "r");
     
-    if(!csv){
-        printf("ERRO! FALHA AO ABRIR ARQUIVO CSV!\n");
-        return 0;
-    }
-
     printf("Nome do arquivo .csv com a tabela: ");
     scanf("%s", nome_csv);
 
@@ -97,6 +156,16 @@ int ler_csv_campeonato(){
     
     if(!tabela){
         printf("ERRO! FALHA AO ABRIR ARQUIVO DA TABELA!\n");
+        return 0;
+    }
+
+    printf("Nome do arquivo .csv com dados dos atletas: ");
+    scanf("%s", nome_csv);
+
+    FILE *csv = fopen(nome_csv, "r");
+    
+    if(!csv){
+        printf("ERRO! FALHA AO ABRIR ARQUIVO CSV!\n");
         return 0;
     }
 
@@ -118,6 +187,23 @@ int ler_csv_campeonato(){
 
     //LEMBRA DE LIMPAR DEPOIS 
 
+    
+    char teste;
+    int j=0; 
+    
+    //pula a primeira linha do csv, header
+    fscanf(tabela, "%*[^\n]%*c");
+
+    while((teste = fgetc(tabela)) != EOF){
+
+        fseek(tabela, -1, SEEK_CUR);
+
+        ler_linha_csv_tabela(tabela);
+        
+    }
+
+    fclose(tabela);
+
     //pula a primeira linha do csv, header
     fscanf(csv, "%*[^\n]%*c");
 
@@ -125,8 +211,6 @@ int ler_csv_campeonato(){
     -ORDENADO PRIMEIRAMENTE PELO ID DO ATLETA
     -ORDENADO SEGUNDAMENTE PELA RODADA
     */
-    char teste;
-    int j=0;
 
     while((teste = fgetc(csv)) != EOF){
 
@@ -139,17 +223,6 @@ int ler_csv_campeonato(){
     }
 
     fclose(csv);
-    
-    //pula a primeira linha do csv, header
-    fscanf(tabela, "%*[^\n]%*c");
-
-    while((teste = fgetc(tabela)) != EOF){
-
-        fseek(tabela, -1, SEEK_CUR);
-
-        ler_linha_csv_tabela(tabela);
-        
-    }
 
     return 1;
 

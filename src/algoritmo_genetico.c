@@ -9,8 +9,6 @@ struct cromossomo{
 
     //Informações adicionais sobre o time durante a simulação
 
-    float cartoletas;
-    float media_pontuacao;
     int quant_pos[6];
 
     //Informações genéticas: são cruzadas com outros cromossomos
@@ -26,7 +24,7 @@ struct cromossomo{
 
     //Inicialmente, considera o gasto uniforme de cartoletas
     
-    int *pref_tec;
+    //int *pref_tec;
     int *pref_gol;
     int *pref_lat;
     int *pref_zag;
@@ -38,11 +36,14 @@ struct cromossomo{
 
 };
 
-int the_best_of_the_bester_fitness = 0;  //Melhor EVER, TEM QUE SABER QUEM É ESSE CARA SEMPRE, NÃO PODE MUTAR ELE
+//Melhor EVER, TEM QUE SABER QUEM É ESSE CARA SEMPRE, NÃO PODE MUTAR ELE
+Cromossomo the_best_of_the_bester;
+float the_best_of_the_bester_fitness = 0;
+
 int the_bester; //Melhor atual da população
 Cromossomo pop[TAM_POP]; //População de indivíduos/cromossomos
-int fitness[TAM_POP]; //Nota de cada cromossomo da população
-int fitness_medio; //Nota média da população
+float fitness[TAM_POP]; //Nota de cada cromossomo da população
+float fitness_medio; //Nota média da população
 char aux[20];
 int n_geracao = 0;
 int besters[100000];
@@ -61,30 +62,35 @@ void definir_seed(time_t seed){
 
 void evolucao(){
 
-    atualizar_grafico_fitness();
-
-    mutacao_dinamica();
+    //reproduz e muta
+    elitismo(); //Seleciona o melhor individuo para transar com todos
+ 
+    //Dinamiza a mutação e faz genocídio
+    //mutacao_dinamica();
 
     //Predação a cada 10 gerações alternando o tipo de predação:
-    if(n_geracao % 10 == 0){
+    /*if(n_geracao % 10 == 0){
         if(tipo_predacao){
             predacao_sintese();
         }else{
             predacao_aleatoria();
         }
         tipo_predacao = (tipo_predacao + 1) % 2;
-    }
+    }*/
 
-    geracao();
+    //avalia população nova
+    avalia_populacao();
+
+    //atualiza gráfico de fitness
+    atualizar_grafico_fitness();
+
+    n_geracao++;
 
 }
 
 void big_bang(){
 
     for (int i = 0; i < TAM_POP; i++){
-        //No começo do game, o time tem 100 cartoletas
-        pop[i].cartoletas = 100;
-        pop[i].media_pontuacao = 0;
 
         //formacao: entre 1 e 7
         int formacao = (rand() % 7) + 1;
@@ -94,18 +100,21 @@ void big_bang(){
         pop[i].quant_pos[1] = 1;
 
         //define o resto da formacao
-        definir_formacao(c, formacao);
+        definir_formacao(i, formacao);
 
         /*for(int i=0; i<6; i++){
             pop[i].mando_pos[i] = rand() % 2;
         }*/
 
+        //Define, aleatoriamente, as 3 preferências de escalação para cada posição
         pop[i].pref_gol = get_3_aleatorios_diferentes_entre(1, get_n_ids_gol());
         pop[i].pref_zag = get_3_aleatorios_diferentes_entre(1, get_n_ids_zag());
         pop[i].pref_lat = get_3_aleatorios_diferentes_entre(1, get_n_ids_lat());
         pop[i].pref_mei = get_3_aleatorios_diferentes_entre(1, get_n_ids_mei());
         pop[i].pref_ata = get_3_aleatorios_diferentes_entre(1, get_n_ids_ata());  
     }
+
+    n_geracao = 0;
 
 }
 
@@ -119,7 +128,7 @@ void limpar_memoria_alocada_ag(){
     }
 }
 
-void definir_formacao(Cromossomo *c, int formacao){
+void definir_formacao(int pos, int formacao){
     
     /* 1 : 3-2-4-1 ou 5-4-1
        2 : 2-2-5-1 ou 4-5-1
@@ -129,57 +138,57 @@ void definir_formacao(Cromossomo *c, int formacao){
        6 : 3-0-4-3 ou 3-4-3
        7 : 2-2-3-3 ou 4-3-3*/
 
-    c->formacao = formacao;
+    pop[pos].formacao = formacao;
 
     switch(formacao){
 
         case 1:
-            c->quant_pos[2] = 3;
-            c->quant_pos[3] = 2;
-            c->quant_pos[4] = 4;
-            c->quant_pos[5] = 1;
+            pop[pos].quant_pos[2] = 3;
+            pop[pos].quant_pos[3] = 2;
+            pop[pos].quant_pos[4] = 4;
+            pop[pos].quant_pos[5] = 1;
             break;
 
         case 2:
-            c->quant_pos[2] = 2;
-            c->quant_pos[3] = 2;
-            c->quant_pos[4] = 5;
-            c->quant_pos[5] = 1;
+            pop[pos].quant_pos[2] = 2;
+            pop[pos].quant_pos[3] = 2;
+            pop[pos].quant_pos[4] = 5;
+            pop[pos].quant_pos[5] = 1;
             break;
 
         case 3:
-            c->quant_pos[2] = 3;
-            c->quant_pos[3] = 2;
-            c->quant_pos[4] = 3;
-            c->quant_pos[5] = 2;
+            pop[pos].quant_pos[2] = 3;
+            pop[pos].quant_pos[3] = 2;
+            pop[pos].quant_pos[4] = 3;
+            pop[pos].quant_pos[5] = 2;
             break;
 
         case 4:
-            c->quant_pos[2] = 3;
-            c->quant_pos[3] = 0;
-            c->quant_pos[4] = 5;
-            c->quant_pos[5] = 2;
+            pop[pos].quant_pos[2] = 3;
+            pop[pos].quant_pos[3] = 0;
+            pop[pos].quant_pos[4] = 5;
+            pop[pos].quant_pos[5] = 2;
             break;
         
         case 5:
-            c->quant_pos[2] = 2;
-            c->quant_pos[3] = 2;
-            c->quant_pos[4] = 4;
-            c->quant_pos[5] = 2;
+            pop[pos].quant_pos[2] = 2;
+            pop[pos].quant_pos[3] = 2;
+            pop[pos].quant_pos[4] = 4;
+            pop[pos].quant_pos[5] = 2;
             break;
 
         case 6:
-            c->quant_pos[2] = 3;
-            c->quant_pos[3] = 0;
-            c->quant_pos[4] = 4;
-            c->quant_pos[5] = 3;
+            pop[pos].quant_pos[2] = 3;
+            pop[pos].quant_pos[3] = 0;
+            pop[pos].quant_pos[4] = 4;
+            pop[pos].quant_pos[5] = 3;
             break;
 
         case 7:
-            c->quant_pos[2] = 2;
-            c->quant_pos[3] = 2;
-            c->quant_pos[4] = 3;
-            c->quant_pos[5] = 3;
+            pop[pos].quant_pos[2] = 2;
+            pop[pos].quant_pos[3] = 2;
+            pop[pos].quant_pos[4] = 3;
+            pop[pos].quant_pos[5] = 3;
             break;
 
         default:
@@ -207,29 +216,18 @@ int *get_3_aleatorios_diferentes_entre(int a, int b){
 
 }
 
-
-void geracao(){
-
-    elitismo(); //Seleciona o melhor individuo para transar com todos
-
-    avalia_populacao();
-
-    n_geracao++;
-
-}
-
 void avalia_populacao(){
 
-    int maior = -1;
-    int menor = fitness[0];
+    float maior = -100000;
+    float menor = 100000;
     fitness_medio = 0;
     //media_pop = 0;
 
+    //registra maior e menor fitness
     for(int i=0; i<TAM_POP; i++){
 
-        //fitness[i] = f_de_x_teto_de_casa(pop[i]);
-
-        avalia_individuo(i);
+        //fitness é a pontuação média do time 
+        fitness[i] = get_pontuacao_media(pop[i].quant_pos, pop[i].pref_gol, pop[i].pref_zag, pop[i].pref_lat, pop[i].pref_mei, pop[i].pref_ata);
 
         if(fitness[i] > maior){
             maior = fitness[i];
@@ -252,6 +250,8 @@ void avalia_populacao(){
 
 void avalia_individuo(int i){
 
+    //fitness[i]
+    
     
 
 }

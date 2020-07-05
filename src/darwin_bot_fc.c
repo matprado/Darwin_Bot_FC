@@ -15,6 +15,7 @@ int read_number();
 int main(int argc, char *argv[]){
 
     definir_seed(time(NULL));
+    //srand(time(NULL));
 
     if(!imprimir_menu_inicial()) return 0;
 
@@ -35,7 +36,17 @@ void algoritmo_genetico(){
     //tenho uma população!
     //tenho dados do campeonato para simular rodadas!
 
-    evolucao();
+    //avalia população inicial
+    avalia_populacao();
+
+    //começa a produzir um gráfico de fitness para facilitar o estudo
+    atualizar_grafico_fitness();
+
+    /*while(!esta_bom){
+
+       evolucao();
+
+    }*/
 
 }
 
@@ -79,7 +90,6 @@ int imprimir_menu_inicial(){
 }
 
 int ler_dados_campeonato(){
-    printf("Qual o arquivo .csv com todos os dados do campeonato?(seguir modelo padrão)\n");
     return ler_csv_campeonato();
 }
 
