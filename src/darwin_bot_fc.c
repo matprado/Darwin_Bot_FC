@@ -42,11 +42,22 @@ void algoritmo_genetico(){
     //começa a produzir um gráfico de fitness para facilitar o estudo
     atualizar_grafico_fitness();
 
-    /*while(!esta_bom){
+    int quer_evoluir = 0, repeticoes = 0;
 
-       evolucao();
+    while(1){
 
-    }*/
+        printf("Gostaria de evoluir quantas vezes? ");
+        repeticoes = read_number();
+
+        if(repeticoes == 0) break;
+
+        printf("evoluindo %d vezes:\n\n", repeticoes);
+
+        for(int i=0; i<repeticoes; i++){
+            evolucao();
+        }
+        
+    }
 
 }
 
@@ -60,11 +71,11 @@ int imprimir_menu_inicial(){
 
     do{
         printf("----------------------------------------------\n");
-        printf("0 - Sair;");
+        printf("0 - Sair;\n");
         printf("1 - Recuperar população já existente;\n");
         printf("2 - Criar nova população;\n");
         printf("----------------------------------------------\n");
-        printf("Digite uma opção:");
+        printf("Digite uma opção: ");
         opc = read_number();
         switch(opc){
             case 0:
@@ -75,9 +86,10 @@ int imprimir_menu_inicial(){
                 break;
             case 2:
                 printf("CUIDADO -> lembre-se de ter um backup\n");
-                scanf("%*s");
+                //scanf("%*s");
                 //Cria uma nova população
                 big_bang();
+                criar_grafico_fitness();
                 break;
             default:
                 printf("Essa opção não existe!\n");
@@ -99,11 +111,11 @@ int imprimir_menu_principal(){
 
     do{
         printf("----------------------------------------------\n");
-        printf("0 - Sair;");
+        printf("0 - Sair;\n");
         printf("1 - Simular algoritmo evolutivo;\n");
         printf("2 - Imprimir_dados_atletas();\n");
         printf("----------------------------------------------\n");
-        printf("Digite uma opção:");
+        printf("Digite uma opção: ");
         opc = read_number();
         switch(opc){
             case 0:
@@ -113,14 +125,9 @@ int imprimir_menu_principal(){
                 //AG;
                 algoritmo_genetico();
                 //----------------------------------------------------------
-            
-                printf("TODO: recuperar população armazenada");
                 break;
             case 2:
-                printf("CUIDADO -> lembre-se de ter um backup\n");
-                scanf("%*s");
-                //Cria uma nova população
-                big_bang();
+                imprimir_todos_atletas();
                 break;
             default:
                 printf("Essa opção não existe!\n");

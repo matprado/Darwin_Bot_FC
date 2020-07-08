@@ -65,7 +65,7 @@ for f in files:
         headers = dict((h, i) for i, h in enumerate(next(csvreader)))
         #print(headers)
         for row in csvreader:
-            print(row[headers['']])
+            #print(row[headers['']])
             merged_rows.add(tuple(row[headers[x]] for x in final_headers))
         
 
@@ -113,11 +113,14 @@ for i in range(1, len(lines)):
     if(lines[i][31] == 'NA' or lines[i][31] == ''): lines[i][31] = '0'
 writer = csv.writer(open('dados_2019.csv', 'w'))
 writer.writerows(lines)
+
 """
+
 #REMOVER TODAS AS TUPLAS COM STATUS DIFERENTE DE PROVAVEL NESSA P#:
 r = csv.reader(open('dados_2019.csv'))
 lines = list(r)
-lines2 = [l for l in lines if(l[8][0] == 'P' or l[8][0] == 'a')]
+#nao adiciona jogadores com status NULO
+lines2 = [l for l in lines if(l[8][0] != 'N')]
     
 writer = csv.writer(open('dados_2019.csv', 'w'))
 writer.writerows(lines2)

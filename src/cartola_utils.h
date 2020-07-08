@@ -18,7 +18,7 @@ typedef struct time Time;
 
 float get_pontuacao_media(int quant_pos[6], int pref_gol[3], int pref_zag[3], int pref_lat[3], int pref_mei[3], int pref_ata[3]);
 
-float escolhe_atletas_rodada(int qtd_atl, const int total, Atleta *atletas[total], int rodada, 
+float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodada, 
     int (*comparador1)(Atleta *, Atleta *, int), int (*comparador2)(Atleta *, Atleta *, int), int (*comparador3)(Atleta *, Atleta *, int));
 
 int ler_csv_campeonato();
