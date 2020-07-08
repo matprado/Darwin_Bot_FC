@@ -1,5 +1,5 @@
 run:
-	./bin/darwin_bot_fc	< entrada.in > saida.out
+	./bin/darwin_bot_fc
 
 all:
 	gcc ./src/cartola_utils.c ./src/algoritmo_genetico.c ./src/darwin_bot_fc.c -o ./bin/darwin_bot_fc -g -Wall

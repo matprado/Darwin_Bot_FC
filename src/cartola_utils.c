@@ -90,16 +90,32 @@ float get_pontuacao_media(int quant_pos[6], int pref_gol[3], int pref_zag[3], in
         //NÃO TO CONSIDERANDO CARTOLETAS AINDA
 
         printf("\t*****rodada %d:*****\n", i);
+        
         printf("  (goleiro):\n");
+        //Atleta **copia_goleiros = get_copia_goleiros_rodada(i);
         pontuacao_acumulada += escolhe_atletas_rodada(quant_pos[1], rodadas[i].n_gol, rodadas[i].gol, i, get_comparador_gol(pref_gol[0]), get_comparador_gol(pref_gol[1]), get_comparador_gol(pref_gol[2]));
+        //free(copia_goleiros);
+
         printf("  (zagueiros):\n");
+        //Atleta **copia_zagueiros = get_copia_zagueiros_rodada(i);
         pontuacao_acumulada += escolhe_atletas_rodada(quant_pos[2], rodadas[i].n_zag, rodadas[i].zag, i, get_comparador_zag(pref_zag[0]), get_comparador_zag(pref_zag[1]), get_comparador_zag(pref_zag[2]));
+        //free(copia_zagueiros);
+
         printf("  (laterais):\n");
+        //Atleta **copia_laterais = get_copia_laterais_rodada(i);
         pontuacao_acumulada += escolhe_atletas_rodada(quant_pos[3], rodadas[i].n_lat, rodadas[i].lat, i, get_comparador_lat(pref_lat[0]), get_comparador_lat(pref_lat[1]), get_comparador_lat(pref_lat[2]));
+        //free(copia_laterais);
+
         printf("  (meias):\n");
+        //Atleta **copia_meias = get_copia_meias_rodada(i);
         pontuacao_acumulada += escolhe_atletas_rodada(quant_pos[4], rodadas[i].n_mei, rodadas[i].mei, i, get_comparador_mei(pref_mei[0]), get_comparador_mei(pref_mei[1]), get_comparador_mei(pref_mei[2]));
+        //free(copia_meias);
+        
         printf("  (atacantes):\n");
+        //Atleta **copia_atacantes = get_copia_atacantes_rodada(i);
         pontuacao_acumulada += escolhe_atletas_rodada(quant_pos[5], rodadas[i].n_ata, rodadas[i].ata, i, get_comparador_ata(pref_ata[0]), get_comparador_ata(pref_ata[1]), get_comparador_ata(pref_ata[2]));     
+        //free(copia_atacantes);
+
         printf("\n");
 
     }
@@ -183,24 +199,24 @@ float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodad
 
 int ler_csv_campeonato(){
 
-    char nome_csv[100];
+    //char nome_csv[100];
     
-    printf("Nome do arquivo .csv com a tabela: ");
-    scanf("%s%*c", nome_csv);
+    //printf("Nome do arquivo .csv com a tabela: ");
+    //scanf("%s%*c", nome_csv);
     //printf("%s\n", nome_csv);
 
-    FILE *tabela = fopen(nome_csv, "r");
+    FILE *tabela = fopen("src/manipulacao_dados/2019/tabela_2019.csv", "r");
     
     if(!tabela){
         printf("ERRO! FALHA AO ABRIR ARQUIVO DA TABELA!\n");
         return 0;
     }
 
-    printf("Nome do arquivo .csv com dados dos atletas: ");
-    scanf("%s%*c", nome_csv);
+    //printf("Nome do arquivo .csv com dados dos atletas: ");
+    //scanf("%s%*c", nome_csv);
     //printf("%s\n", nome_csv);
 
-    FILE *csv = fopen(nome_csv, "r");
+    FILE *csv = fopen("src/manipulacao_dados/2019/dados_2019.csv", "r");
     
     if(!csv){
         printf("ERRO! FALHA AO ABRIR ARQUIVO CSV!\n");
@@ -808,4 +824,49 @@ void merge(Atleta **vet, int ini, int meio, int fim, int (*comparador)(Atleta *,
         vet[k] = aux[k-ini];
     }
     free(aux);
+}
+
+Atleta **get_copia_goleiros_rodada(int i){
+    int n = rodadas[i].n_gol;
+    Atleta **copia = (Atleta **) malloc(n * sizeof(Atleta *));
+    for(int j=0; j<n; j++){
+        copia[j] = rodadas[i].gol[j];
+    }
+    return copia;
+}
+
+Atleta **get_copia_zagueiros_rodada(int i){
+    int n = rodadas[i].n_zag;
+    Atleta **copia = (Atleta **) malloc(n * sizeof(Atleta *));
+    for(int j=0; j<n; j++){
+        copia[j] = rodadas[i].zag[j];
+    }
+    return copia;
+}
+
+Atleta **get_copia_laterais_rodada(int i){
+    int n = rodadas[i].n_lat;
+    Atleta **copia = (Atleta **) malloc(n * sizeof(Atleta *));
+    for(int j=0; j<n; j++){
+        copia[j] = rodadas[i].lat[j];
+    }
+    return copia;
+}
+
+Atleta **get_copia_meias_rodada(int i){
+    int n = rodadas[i].n_mei;
+    Atleta **copia = (Atleta **) malloc(n * sizeof(Atleta *));
+    for(int j=0; j<n; j++){
+        copia[j] = rodadas[i].mei[j];
+    }
+    return copia;
+}
+
+Atleta **get_copia_atacantes_rodada(int i){
+    int n = rodadas[i].n_ata;
+    Atleta **copia = (Atleta **) malloc(n * sizeof(Atleta *));
+    for(int j=0; j<n; j++){
+        copia[j] = rodadas[i].ata[j];
+    }
+    return copia;
 }

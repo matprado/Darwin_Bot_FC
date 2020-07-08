@@ -4,13 +4,12 @@
 #include <time.h>
 
 #define TAM_POP 10
-#define TAXA_MUT_INI 0.0001
-#define VALOR_MAX 1000
-#define VALOR_MEIO (VALOR_MAX / 2)
-#define N_IGUAIS_CONSECUTIVOS 5
-#define FATOR_MUTACAO 2 // DOBRA
-#define LIMITE_TAXA_MUT 1
 #define LIMITE_PROBABILIDADE 10000
+#define TAXA_MUT_INI 0.0001
+#define FATOR_MUTACAO 1.5
+#define LIMITE_TAXA_MUT 1
+#define N_IGUAIS_CONSECUTIVOS 5
+#define GERACOES_PREDACAO 10
 
 //Estrutura de um cromossomo(ou indivíduo)
 typedef struct cromossomo Cromossomo;
@@ -57,6 +56,12 @@ void genocidio_total();
 
 void genocidio_parcial();
 
-void imprime_pop();
+void predacao();
+
+void imprimir_melhor_cromossomo();
+
+void imprimir_cromossomo(Cromossomo c);
+
+float get_fitness_melhor();
 
 #endif

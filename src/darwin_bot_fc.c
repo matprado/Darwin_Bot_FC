@@ -25,6 +25,9 @@ int main(int argc, char *argv[]){
 
     //imprimir_todos_atletas();
     
+    printf("MELHOR INDIVÍDUO COM FITNESS = %f\n", get_fitness_melhor());
+    imprimir_melhor_cromossomo();
+
     limpar_memoria_alocada_cartola();
     limpar_memoria_alocada_ag();
 
@@ -42,7 +45,7 @@ void algoritmo_genetico(){
     //começa a produzir um gráfico de fitness para facilitar o estudo
     atualizar_grafico_fitness();
 
-    int quer_evoluir = 0, repeticoes = 0;
+    int repeticoes = 0;
 
     while(1){
 

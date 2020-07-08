@@ -64,4 +64,10 @@ void ordena_vetor_rodada(Atleta **vet, int tam, int (*comparador)(Atleta *, Atle
 void merge_sort(Atleta **vet, int ini, int fim, int (*comparador)(Atleta *, Atleta *, int), int rodada);
 void merge(Atleta **vet, int ini, int meio, int fim, int (*comparador)(Atleta *, Atleta *, int), int rodada);
 
+Atleta **get_copia_goleiros_rodada(int i);
+Atleta **get_copia_zagueiros_rodada(int i);
+Atleta **get_copia_laterais_rodada(int i);
+Atleta **get_copia_meias_rodada(int i);
+Atleta **get_copia_atacantes_rodada(int i);
+
 #endif
