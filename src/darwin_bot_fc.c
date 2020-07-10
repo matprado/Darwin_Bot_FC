@@ -22,11 +22,11 @@ int main(int argc, char *argv[]){
     if(!ler_dados_campeonato()) return 0;
 
     imprimir_menu_principal();
-
-    //imprimir_todos_atletas();
     
     printf("MELHOR INDIVÍDUO COM FITNESS = %f\n", get_fitness_melhor());
     imprimir_melhor_cromossomo();
+
+    armazenar_dados_ag();
 
     limpar_memoria_alocada_cartola();
     limpar_memoria_alocada_ag();
@@ -84,12 +84,12 @@ int imprimir_menu_inicial(){
             case 0:
                 return 0;
             case 1:
-                //recupera_backup_populacao();
-                printf("TODO: recuperar população armazenada");
+                recuperar_dados_ag();
+                incrementar_grafico_fitness();
                 break;
             case 2:
                 printf("CUIDADO -> lembre-se de ter um backup\n");
-                //scanf("%*s");
+                scanf("%*c");
                 //Cria uma nova população
                 big_bang();
                 criar_grafico_fitness();
@@ -116,7 +116,6 @@ int imprimir_menu_principal(){
         printf("----------------------------------------------\n");
         printf("0 - Sair;\n");
         printf("1 - Simular algoritmo evolutivo;\n");
-        printf("2 - Imprimir_dados_atletas();\n");
         printf("----------------------------------------------\n");
         printf("Digite uma opção: ");
         opc = read_number();
@@ -128,9 +127,6 @@ int imprimir_menu_principal(){
                 //AG;
                 algoritmo_genetico();
                 //----------------------------------------------------------
-                break;
-            case 2:
-                imprimir_todos_atletas();
                 break;
             default:
                 printf("Essa opção não existe!\n");

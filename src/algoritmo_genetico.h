@@ -46,6 +46,8 @@ void mutacao_dinamica();
 
 void criar_grafico_fitness();
 
+void incrementar_grafico_fitness();
+
 void atualizar_grafico_fitness();
 
 void predacao_sintese();
@@ -63,5 +65,9 @@ void imprimir_melhor_cromossomo();
 void imprimir_cromossomo(Cromossomo c);
 
 float get_fitness_melhor();
+
+void armazenar_dados_ag();
+
+void recuperar_dados_ag();
 
 #endif

@@ -44,18 +44,18 @@ int the_bester; //Melhor atual da população
 Cromossomo pop[TAM_POP]; //População de indivíduos/cromossomos
 float fitness[TAM_POP]; //Nota de cada cromossomo da população
 float fitness_medio; //Nota média da população
-char aux[20];
 int n_geracao = 0;
 int besters[100000];
 FILE *melhor_fitness;
 FILE *media_fitness;
+FILE *backup;
 int iguais_consecutivos = 0;
 double taxa_mutacao = TAXA_MUT_INI;
 int the_worst;
 int tipo_predacao = 0;
 int tipo_genocidio = 0;
-double media_pop = 0;
 Cromossomo sintese;
+int geracao_total;
 
 void definir_seed(time_t seed){
     srand(seed);
@@ -105,6 +105,7 @@ void big_bang(){
     }
 
     n_geracao = 0;
+    geracao_total = 0;
 
     the_best_of_the_bester.pref_gol = (int *) malloc(3 * sizeof(int));
     the_best_of_the_bester.pref_zag = (int *) malloc(3 * sizeof(int));
@@ -140,6 +141,7 @@ void limpar_memoria_alocada_ag(){
     free(sintese.pref_ata);
     fclose(melhor_fitness);
     fclose(media_fitness);
+    fclose(backup);
 }
 
 void definir_formacao(int pos, int formacao){
@@ -295,6 +297,8 @@ void avalia_populacao(){
         sintese.pref_mei[j] /= TAM_POP;
         sintese.pref_ata[j] /= TAM_POP;
     }
+
+    printf("O melhor conseguiu, em média, %f pontos!\n", fitness[the_bester]);
 
 }
 
@@ -455,17 +459,25 @@ void criar_grafico_fitness(){
     media_fitness = fopen("data/media_fitness.dat", "w+");
 }
 
-//recuperar
+void incrementar_grafico_fitness(){
+    //char nome[30];
+    //printf("Digite o nome do arquivo dos melhores fitness: ");
+    //scanf("%s%*c", nome);
+    melhor_fitness = fopen("data/melhor_fitness.dat", "a+");
+    //printf("Digite o nome do arquivo da média de fitness: ");
+    //scanf("%s%*c", nome);
+    media_fitness = fopen("data/media_fitness.dat", "a+");
+}
 
 void atualizar_grafico_fitness(){
     //Vetor de melhores a cada geração
     besters[n_geracao] = fitness[the_bester];
 
     //Guarda o melhor por geração no arquivo melhor_fitness.dat
-    fprintf(melhor_fitness, "%d\t%f\n", n_geracao, fitness[the_bester]);
+    fprintf(melhor_fitness, "%d\t%f\n", n_geracao+geracao_total, fitness[the_bester]);
     
     //Guarda a média de fitness por geração no arquivo media_fitness.dat
-    fprintf(media_fitness, "%d\t%f\n", n_geracao, fitness_medio);
+    fprintf(media_fitness, "%d\t%f\n", n_geracao+geracao_total, fitness_medio);
 }
 
 void predacao_sintese(){
@@ -590,4 +602,106 @@ void imprimir_cromossomo(Cromossomo c){
 
 float get_fitness_melhor(){
     return the_best_of_the_bester_fitness;
+}
+
+void armazenar_dados_ag(){
+
+    //armazeno, na sequencia:
+    /*
+        Cromossomo the_best_of_the_bester;
+        float the_best_of_the_bester_fitness;
+        Cromossomo pop[TAM_POP];
+        int geracao_total;
+        int iguais_consecutivos;
+        double taxa_mutacao;
+        int tipo_predacao;
+        int tipo_genocidio;
+    */
+
+    backup = fopen("data/backup.txt", "w+");
+
+    fprintf(backup, "%d\n", the_best_of_the_bester.formacao);
+    for(int i=0; i<3; i++){
+        fprintf(backup, "%d\n", the_best_of_the_bester.pref_gol[i]);
+        fprintf(backup, "%d\n", the_best_of_the_bester.pref_zag[i]);
+        fprintf(backup, "%d\n", the_best_of_the_bester.pref_lat[i]);
+        fprintf(backup, "%d\n", the_best_of_the_bester.pref_mei[i]);
+        fprintf(backup, "%d\n", the_best_of_the_bester.pref_ata[i]);
+    }
+
+    fprintf(backup, "%f\n", the_best_of_the_bester_fitness);
+
+    for(int j=0; j<TAM_POP; j++){
+        fprintf(backup, "%d\n", pop[j].formacao);
+        for(int i=0; i<3; i++){
+            fprintf(backup, "%d\n", pop[j].pref_gol[i]);
+            fprintf(backup, "%d\n", pop[j].pref_zag[i]);
+            fprintf(backup, "%d\n", pop[j].pref_lat[i]);
+            fprintf(backup, "%d\n", pop[j].pref_mei[i]);
+            fprintf(backup, "%d\n", pop[j].pref_ata[i]);
+        }
+    }
+
+    geracao_total += n_geracao;
+    fprintf(backup, "%d\n", geracao_total);
+    fprintf(backup, "%d\n", iguais_consecutivos);
+    fprintf(backup, "%lf\n", taxa_mutacao);
+    fprintf(backup, "%d\n", tipo_predacao);
+    fprintf(backup, "%d\n", tipo_genocidio);
+
+}
+
+void recuperar_dados_ag(){
+
+    backup = fopen("data/backup.txt", "r+");
+
+    fscanf(backup, "%d%*c", &the_best_of_the_bester.formacao);
+    the_best_of_the_bester.pref_gol = (int *) malloc(3 * sizeof(int));
+    the_best_of_the_bester.pref_zag = (int *) malloc(3 * sizeof(int));
+    the_best_of_the_bester.pref_lat = (int *) malloc(3 * sizeof(int));
+    the_best_of_the_bester.pref_mei = (int *) malloc(3 * sizeof(int));
+    the_best_of_the_bester.pref_ata = (int *) malloc(3 * sizeof(int));
+    for(int i=0; i<3; i++){
+        fscanf(backup, "%d%*c", &(the_best_of_the_bester.pref_gol[i]));
+        fscanf(backup, "%d%*c", &(the_best_of_the_bester.pref_zag[i]));
+        fscanf(backup, "%d%*c", &(the_best_of_the_bester.pref_lat[i]));
+        fscanf(backup, "%d%*c", &(the_best_of_the_bester.pref_mei[i]));
+        fscanf(backup, "%d%*c", &(the_best_of_the_bester.pref_ata[i]));
+    }
+
+    fscanf(backup, "%f%*c", &the_best_of_the_bester_fitness);
+
+    for(int j=0; j<TAM_POP; j++){
+        fscanf(backup, "%d%*c", &(pop[j].formacao));
+        definir_formacao(j, pop[j].formacao);
+        pop[j].pref_gol = (int *) malloc(3 * sizeof(int));
+        pop[j].pref_zag = (int *) malloc(3 * sizeof(int));
+        pop[j].pref_lat = (int *) malloc(3 * sizeof(int));
+        pop[j].pref_mei = (int *) malloc(3 * sizeof(int));
+        pop[j].pref_ata = (int *) malloc(3 * sizeof(int));
+        for(int i=0; i<3; i++){
+            fscanf(backup, "%d%*c", &(pop[j].pref_gol[i]));
+            fscanf(backup, "%d%*c", &(pop[j].pref_zag[i]));
+            fscanf(backup, "%d%*c", &(pop[j].pref_lat[i]));
+            fscanf(backup, "%d%*c", &(pop[j].pref_mei[i]));
+            fscanf(backup, "%d%*c", &(pop[j].pref_ata[i]));
+        }
+    }
+
+    fscanf(backup, "%d%*c", &geracao_total);
+    fscanf(backup, "%d%*c", &iguais_consecutivos);
+    fscanf(backup, "%lf%*c", &taxa_mutacao);
+    fscanf(backup, "%d%*c", &tipo_predacao);
+    fscanf(backup, "%d%*c", &tipo_genocidio);
+
+    fclose(backup);
+
+    n_geracao = 0;
+    
+    sintese.pref_gol = (int *) malloc(3 * sizeof(int));
+    sintese.pref_zag = (int *) malloc(3 * sizeof(int));
+    sintese.pref_lat = (int *) malloc(3 * sizeof(int));
+    sintese.pref_mei = (int *) malloc(3 * sizeof(int));
+    sintese.pref_ata = (int *) malloc(3 * sizeof(int));
+
 }
