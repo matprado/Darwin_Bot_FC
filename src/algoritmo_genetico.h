@@ -4,12 +4,20 @@
 #include <time.h>
 
 #define TAM_POP 10
-#define LIMITE_PROBABILIDADE 10000
-#define TAXA_MUT_INI 0.0001
-#define FATOR_MUTACAO 1.5
+#define TAXA_MUT_INI 0.1
 #define LIMITE_TAXA_MUT 1
+#define FATOR_MUTACAO 1.25
+#define SOMA_MUTACAO 0.1
 #define N_IGUAIS_CONSECUTIVOS 5
+
 #define GERACOES_PREDACAO 10
+
+#define TAXA_MUT_INI_FOR 0.001
+#define LIMITE_TAXA_MUT_FOR 1
+#define FATOR_MUTACAO_FOR 2
+#define DELTA 1
+
+#define NUM_GEN_TOTAL 10
 
 //Estrutura de um cromossomo(ou indivíduo)
 typedef struct cromossomo Cromossomo;
@@ -43,6 +51,8 @@ void mutacao();
 void ajuste();
 
 void mutacao_dinamica();
+
+void mutacao_dinamica_delta();
 
 void criar_grafico_fitness();
 

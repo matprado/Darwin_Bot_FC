@@ -45,7 +45,7 @@ Cromossomo pop[TAM_POP]; //População de indivíduos/cromossomos
 float fitness[TAM_POP]; //Nota de cada cromossomo da população
 float fitness_medio; //Nota média da população
 int n_geracao = 0;
-int besters[100000];
+float besters[100000];
 FILE *melhor_fitness;
 FILE *media_fitness;
 FILE *backup;
@@ -56,6 +56,8 @@ int tipo_predacao = 0;
 int tipo_genocidio = 0;
 Cromossomo sintese;
 int geracao_total;
+
+double taxa_mutacao_for = TAXA_MUT_INI_FOR;
 
 void definir_seed(time_t seed){
     srand(seed);
@@ -68,6 +70,7 @@ void evolucao(){
  
     //Dinamiza a mutação e faz genocídio
     mutacao_dinamica();
+    mutacao_dinamica_delta();
 
     //preda
     predacao();
@@ -350,7 +353,7 @@ int media_simples(int f1, int f2){
     return f3 / 2;
 }
 
-void mutacao(int i){
+/*void mutacao(int i){
     //pop[i] = pop[i] + ((rand() % VALOR_MAX - VALOR_MEIO) * taxa_mutacao); //Mutação
 
     int teste;
@@ -422,30 +425,126 @@ void mutacao(int i){
             pop[i].pref_ata[j] = mut;
         }
     }
+}*/
+
+
+int converte(float num){
+    float resto = num - (int)num;
+    if(resto<0.5){
+        num = (int)num;
+    }else{
+        num = ((int)num) + 1;        
+    }
+    return num;
 }
+
+void mutacao(int i){
+    //Mutação
+
+    int formacao = pop[i].formacao + converte(((rand() % 7 - 3) * taxa_mutacao_for));
+    //Ajeitar Valores fora dos limites
+    if(formacao < 1) formacao = (-formacao) + 2;
+    else if(formacao > 7){
+        formacao = 14 - formacao;
+        //if(formacao < 0) formacao = (-formacao) % VALOR_MAX;
+    }
+    definir_formacao(i, formacao);
+
+    int n_gol = get_n_ids_gol(), n_zag = get_n_ids_zag(), n_lat = get_n_ids_lat(), n_mei = get_n_ids_mei(), n_ata = get_n_ids_ata();
+    
+    for(int j=0; j<3; j++){
+
+        int mut = pop[i].pref_gol[j] + converte(((rand() % n_gol - n_gol/2) * taxa_mutacao));
+        //Ajeitar Valores fora dos limites
+        if(mut < 1) mut = -(mut) + 2;
+        else if(mut > (n_gol)){
+            mut = 2*(n_gol) - mut;
+        }
+        pop[i].pref_gol[j] = mut;
+    
+        
+        mut = pop[i].pref_zag[j] + converte(((rand() % n_zag - n_zag/2) * taxa_mutacao));
+        //Ajeitar Valores fora dos limites
+        if(mut < 1) mut = -(mut) + 2;
+        else if(mut > (n_zag)){
+            mut = 2*(n_zag) - mut;
+        }
+        pop[i].pref_zag[j] = mut;
+    
+        
+        mut = pop[i].pref_lat[j] + converte(((rand() % n_lat - n_lat/2) * taxa_mutacao));
+        //Ajeitar Valores fora dos limites
+        if(mut < 1) mut = -(mut) + 2;
+        else if(mut > (n_lat)){
+            mut = 2*(n_lat) - mut;
+        }
+        pop[i].pref_lat[j] = mut;
+    
+    
+        mut = pop[i].pref_mei[j] + converte(((rand() % n_mei - n_mei/2) * taxa_mutacao));
+        //Ajeitar Valores fora dos limites
+        if(mut < 1) mut = -(mut) + 2;
+        else if(mut > (n_mei)){
+            mut = 2*(n_mei) - mut;
+        }
+        pop[i].pref_mei[j] = mut;
+        
+        
+        mut = pop[i].pref_ata[j] + converte(((rand() % n_ata - n_ata/2) * taxa_mutacao));
+        //Ajeitar Valores fora dos limites
+        if(mut < 1) mut = -(mut) + 2;
+        else if(mut > (n_ata)){
+            mut = 2*(n_ata) - mut;
+        }
+        pop[i].pref_ata[j] = mut;
+        
+    }
+}
+
 
 void mutacao_dinamica(){
     if(n_geracao>0 && besters[n_geracao] == besters[n_geracao-1]){
         iguais_consecutivos++;
         if(iguais_consecutivos == N_IGUAIS_CONSECUTIVOS){
-            taxa_mutacao *= FATOR_MUTACAO;
+            taxa_mutacao += SOMA_MUTACAO;
             //Taxa de Mutação chega no seu limite máximo:
             if(taxa_mutacao > LIMITE_TAXA_MUT){
                 //Reseta:
                 taxa_mutacao = TAXA_MUT_INI;
                 //Genocídio:
-                if(tipo_genocidio){
+                if(tipo_genocidio == NUM_GEN_TOTAL-1){
                     genocidio_total();
                 }else{
                     genocidio_parcial();
                 }
-                tipo_genocidio = (tipo_genocidio + 1) % 2;
+                tipo_genocidio = (tipo_genocidio + 1) % NUM_GEN_TOTAL;
             }
             iguais_consecutivos = 0;
         }
     }else{
         taxa_mutacao = TAXA_MUT_INI;
         iguais_consecutivos = 0;
+        tipo_genocidio = 0;
+    }
+}
+
+void mutacao_dinamica_delta(){
+    if((the_best_of_the_bester_fitness - fitness_medio) <= DELTA){
+        //taxa_mutacao *= FATOR_MUTACAO;
+        taxa_mutacao_for *= FATOR_MUTACAO_FOR;
+        //Taxa de Mutação chega no seu limite máximo:
+        if(taxa_mutacao_for > LIMITE_TAXA_MUT_FOR){
+            taxa_mutacao_for = TAXA_MUT_INI_FOR;
+            //Genocídio:
+            if(tipo_genocidio){
+                genocidio_total();
+            }else{
+                genocidio_parcial();
+            }
+            tipo_genocidio = (tipo_genocidio + 1) % 2;
+        }
+    }else{
+        taxa_mutacao_for = TAXA_MUT_INI_FOR;
     }
 }
 
@@ -471,10 +570,12 @@ void incrementar_grafico_fitness(){
 
 void atualizar_grafico_fitness(){
     //Vetor de melhores a cada geração
-    besters[n_geracao] = fitness[the_bester];
+    //besters[n_geracao] = fitness[the_bester];
+    besters[n_geracao] = the_best_of_the_bester_fitness;
 
     //Guarda o melhor por geração no arquivo melhor_fitness.dat
-    fprintf(melhor_fitness, "%d\t%f\n", n_geracao+geracao_total, fitness[the_bester]);
+    //fprintf(melhor_fitness, "%d\t%f\n", n_geracao+geracao_total, fitness[the_bester]);
+    fprintf(melhor_fitness, "%d\t%f\n", n_geracao+geracao_total, the_best_of_the_bester_fitness);
     
     //Guarda a média de fitness por geração no arquivo media_fitness.dat
     fprintf(media_fitness, "%d\t%f\n", n_geracao+geracao_total, fitness_medio);
@@ -646,6 +747,7 @@ void armazenar_dados_ag(){
     fprintf(backup, "%d\n", geracao_total);
     fprintf(backup, "%d\n", iguais_consecutivos);
     fprintf(backup, "%lf\n", taxa_mutacao);
+    fprintf(backup, "%lf\n", taxa_mutacao_for);
     fprintf(backup, "%d\n", tipo_predacao);
     fprintf(backup, "%d\n", tipo_genocidio);
 
@@ -691,6 +793,7 @@ void recuperar_dados_ag(){
     fscanf(backup, "%d%*c", &geracao_total);
     fscanf(backup, "%d%*c", &iguais_consecutivos);
     fscanf(backup, "%lf%*c", &taxa_mutacao);
+    fscanf(backup, "%lf%*c", &taxa_mutacao_for);
     fscanf(backup, "%d%*c", &tipo_predacao);
     fscanf(backup, "%d%*c", &tipo_genocidio);
 
