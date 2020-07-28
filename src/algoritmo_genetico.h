@@ -80,4 +80,8 @@ void armazenar_dados_ag();
 
 void recuperar_dados_ag();
 
+void verificar_preferencias_iguais(int i);
+
+void verificar_preferencias_iguais_sintese();
+
 #endif

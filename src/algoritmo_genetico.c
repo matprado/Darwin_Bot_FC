@@ -31,6 +31,16 @@ struct cromossomo{
     int *pref_mei;
     int *pref_ata;
 
+    int capitao;
+    /*
+    1-gol
+    2-zag
+    3-lat
+    4-mei
+    5-ata
+    6-tec
+    */
+
     //Preferencia por mando de campo em cada posição
     //int mando_pos[6];
 
@@ -98,6 +108,10 @@ void big_bang(){
         /*for(int i=0; i<6; i++){
             pop[i].mando_pos[i] = rand() % 2;
         }*/
+
+        //capitao: entre 1 e 5
+        //LEMBRAR DO TECNICO AUMENTAR PRA 6
+        pop[i].capitao = (rand() % 5) + 1;
 
         //Define, aleatoriamente, as 3 preferências de escalação para cada posição
         pop[i].pref_gol = get_3_aleatorios_diferentes_entre(1, get_n_ids_gol());
@@ -245,6 +259,7 @@ void avalia_populacao(){
     float menor = 100000;
     fitness_medio = 0;
     sintese.formacao = 0;
+    sintese.capitao = 0;
     for(int i=0; i<3; i++){
         sintese.pref_gol[i] = 0;
         sintese.pref_zag[i] = 0;
@@ -259,7 +274,7 @@ void avalia_populacao(){
         imprimir_cromossomo(pop[i]);
         
         //fitness é a pontuação média do time em um campeonato
-        fitness[i] = get_pontuacao_media(pop[i].quant_pos, pop[i].pref_gol, pop[i].pref_zag, pop[i].pref_lat, pop[i].pref_mei, pop[i].pref_ata);
+        fitness[i] = get_pontuacao_media(pop[i].quant_pos, pop[i].pref_gol, pop[i].pref_zag, pop[i].pref_lat, pop[i].pref_mei, pop[i].pref_ata, pop[i].capitao);
 
         //registra maior e menor fitness
         if(fitness[i] > maior){
@@ -273,6 +288,7 @@ void avalia_populacao(){
         fitness_medio += fitness[i];
         
         sintese.formacao += pop[i].formacao;
+        sintese.capitao += pop[i].capitao;
         for(int j=0; j<3; j++){
             sintese.pref_gol[j] += pop[i].pref_gol[j];
             sintese.pref_zag[j] += pop[i].pref_zag[j];
@@ -293,6 +309,7 @@ void avalia_populacao(){
     fitness_medio /= TAM_POP;
     
     sintese.formacao /= TAM_POP;
+    sintese.capitao /= TAM_POP;
     for(int j=0; j<3; j++){
         sintese.pref_gol[j] /= TAM_POP;
         sintese.pref_zag[j] /= TAM_POP;
@@ -301,6 +318,8 @@ void avalia_populacao(){
         sintese.pref_ata[j] /= TAM_POP;
     }
 
+    verificar_preferencias_iguais_sintese();
+
     printf("O melhor conseguiu, em média, %f pontos!\n", fitness[the_bester]);
 
 }
@@ -308,6 +327,7 @@ void avalia_populacao(){
 //a recebe a copia de b
 void copia_the_bester_cromossomo(){
     the_best_of_the_bester.formacao = pop[the_bester].formacao;
+    the_best_of_the_bester.capitao = pop[the_bester].capitao;
     for(int i=0; i<6; i++) the_best_of_the_bester.quant_pos[i] = pop[the_bester].quant_pos[i];
 
     for(int i=0; i<3; i++){
@@ -326,6 +346,9 @@ void elitismo(){
         crossover(i, the_bester); 
         //Mutação
         mutacao(i);
+
+        verificar_preferencias_iguais(i);
+
     }
 }
 
@@ -336,6 +359,8 @@ void crossover(int a, int b){
 
     int formacao = media_simples(pop[a].formacao, pop[b].formacao);
     definir_formacao(a, formacao);
+
+    pop[a].capitao = media_simples(pop[a].capitao, pop[b].capitao);
     
     for(int i=0; i<3; i++){
         pop[a].pref_gol[i] = media_simples(pop[a].pref_gol[i], pop[b].pref_gol[i]);
@@ -449,6 +474,13 @@ void mutacao(int i){
         //if(formacao < 0) formacao = (-formacao) % VALOR_MAX;
     }
     definir_formacao(i, formacao);
+
+    int capitao = pop[i].capitao + converte(((rand() % 5 - 2) * taxa_mutacao_for));
+    //Ajeitar Valores fora dos limites
+    if(capitao < 1) capitao = (-capitao) + 2;
+    else if(capitao > 5){
+        capitao = 10 - capitao;
+    }
 
     int n_gol = get_n_ids_gol(), n_zag = get_n_ids_zag(), n_lat = get_n_ids_lat(), n_mei = get_n_ids_mei(), n_ata = get_n_ids_ata();
     
@@ -587,6 +619,8 @@ void predacao_sintese(){
     //define a formacao
     definir_formacao(the_worst, sintese.formacao);
 
+    pop[the_worst].capitao = sintese.capitao;
+
     for(int i=0; i<3; i++){
         pop[the_worst].pref_gol[i] = sintese.pref_gol[i];
         pop[the_worst].pref_zag[i] = sintese.pref_zag[i];
@@ -603,6 +637,11 @@ void predacao_aleatoria(){
 
     //define a formacao
     definir_formacao(the_worst, formacao);
+
+    //capitao: entre 1 e 5
+    //LEMBRAR DO TECNICO AUMENTAR PRA 6
+    pop[the_worst].capitao = (rand() % 5) + 1;
+
 
     //Define, aleatoriamente, as 3 preferências de escalação para cada posição
     free(pop[the_worst].pref_gol);
@@ -631,12 +670,16 @@ void genocidio_total(){
             pop[i].mando_pos[i] = rand() % 2;
         }*/
 
+        //capitao: entre 1 e 5
+        //LEMBRAR DO TECNICO AUMENTAR PRA 6
+        pop[i].capitao = (rand() % 5) + 1;
+
         //Define, aleatoriamente, as 3 preferências de escalação para cada posição
-        free(pop[the_worst].pref_gol);
-        free(pop[the_worst].pref_zag);
-        free(pop[the_worst].pref_lat);
-        free(pop[the_worst].pref_mei);
-        free(pop[the_worst].pref_ata);
+        free(pop[i].pref_gol);
+        free(pop[i].pref_zag);
+        free(pop[i].pref_lat);
+        free(pop[i].pref_mei);
+        free(pop[i].pref_ata);
         pop[i].pref_gol = get_3_aleatorios_diferentes_entre(1, get_n_ids_gol());
         pop[i].pref_zag = get_3_aleatorios_diferentes_entre(1, get_n_ids_zag());
         pop[i].pref_lat = get_3_aleatorios_diferentes_entre(1, get_n_ids_lat());
@@ -662,12 +705,16 @@ void genocidio_parcial(){
             pop[i].mando_pos[i] = rand() % 2;
         }*/
 
+        //capitao: entre 1 e 5
+        //LEMBRAR DO TECNICO AUMENTAR PRA 6
+        pop[i].capitao = (rand() % 5) + 1;
+
         //Define, aleatoriamente, as 3 preferências de escalação para cada posição
-        free(pop[the_worst].pref_gol);
-        free(pop[the_worst].pref_zag);
-        free(pop[the_worst].pref_lat);
-        free(pop[the_worst].pref_mei);
-        free(pop[the_worst].pref_ata);
+        free(pop[i].pref_gol);
+        free(pop[i].pref_zag);
+        free(pop[i].pref_lat);
+        free(pop[i].pref_mei);
+        free(pop[i].pref_ata);
         pop[i].pref_gol = get_3_aleatorios_diferentes_entre(1, get_n_ids_gol());
         pop[i].pref_zag = get_3_aleatorios_diferentes_entre(1, get_n_ids_zag());
         pop[i].pref_lat = get_3_aleatorios_diferentes_entre(1, get_n_ids_lat());
@@ -694,6 +741,7 @@ void imprimir_melhor_cromossomo(){
 
 void imprimir_cromossomo(Cromossomo c){
     printf("*** Formacao: %d-%d-%d ***\n", c.quant_pos[2] + c.quant_pos[3], c.quant_pos[4], c.quant_pos[5]);
+    printf("*** Capitão: %d ***\n", c.capitao);
     printf("*** Pref. Goleiro: %d, %d e %d ***\n", c.pref_gol[0], c.pref_gol[1], c.pref_gol[2]);
     printf("*** Pref. Zagueiro: %d, %d e %d ***\n", c.pref_zag[0], c.pref_zag[1], c.pref_zag[2]);
     printf("*** Pref. Lateral: %d, %d e %d ***\n", c.pref_lat[0], c.pref_lat[1], c.pref_lat[2]);
@@ -722,6 +770,7 @@ void armazenar_dados_ag(){
     backup = fopen("data/backup.txt", "w+");
 
     fprintf(backup, "%d\n", the_best_of_the_bester.formacao);
+    fprintf(backup, "%d\n", the_best_of_the_bester.capitao);
     for(int i=0; i<3; i++){
         fprintf(backup, "%d\n", the_best_of_the_bester.pref_gol[i]);
         fprintf(backup, "%d\n", the_best_of_the_bester.pref_zag[i]);
@@ -734,6 +783,7 @@ void armazenar_dados_ag(){
 
     for(int j=0; j<TAM_POP; j++){
         fprintf(backup, "%d\n", pop[j].formacao);
+        fprintf(backup, "%d\n", pop[j].capitao);
         for(int i=0; i<3; i++){
             fprintf(backup, "%d\n", pop[j].pref_gol[i]);
             fprintf(backup, "%d\n", pop[j].pref_zag[i]);
@@ -758,6 +808,7 @@ void recuperar_dados_ag(){
     backup = fopen("data/backup.txt", "r+");
 
     fscanf(backup, "%d%*c", &the_best_of_the_bester.formacao);
+    fscanf(backup, "%d%*c", &the_best_of_the_bester.capitao);
     the_best_of_the_bester.pref_gol = (int *) malloc(3 * sizeof(int));
     the_best_of_the_bester.pref_zag = (int *) malloc(3 * sizeof(int));
     the_best_of_the_bester.pref_lat = (int *) malloc(3 * sizeof(int));
@@ -776,6 +827,7 @@ void recuperar_dados_ag(){
     for(int j=0; j<TAM_POP; j++){
         fscanf(backup, "%d%*c", &(pop[j].formacao));
         definir_formacao(j, pop[j].formacao);
+        fscanf(backup, "%d%*c", &(pop[j].capitao));
         pop[j].pref_gol = (int *) malloc(3 * sizeof(int));
         pop[j].pref_zag = (int *) malloc(3 * sizeof(int));
         pop[j].pref_lat = (int *) malloc(3 * sizeof(int));
@@ -806,5 +858,261 @@ void recuperar_dados_ag(){
     sintese.pref_lat = (int *) malloc(3 * sizeof(int));
     sintese.pref_mei = (int *) malloc(3 * sizeof(int));
     sintese.pref_ata = (int *) malloc(3 * sizeof(int));
+
+}
+
+void verificar_preferencias_iguais(int i){
+
+    int r, fator;
+
+    int n_gol = get_n_ids_gol(), n_zag = get_n_ids_zag(), n_lat = get_n_ids_lat(), n_mei = get_n_ids_mei(), n_ata = get_n_ids_ata();
+
+    if(pop[i].pref_gol[1] == pop[i].pref_gol[0]){
+        r = rand()%2;
+        if(r){
+            pop[i].pref_gol[1] += 1;
+            if(pop[i].pref_gol[1] > n_gol){
+                pop[i].pref_gol[1] = 2*(n_gol) - pop[i].pref_gol[1];
+            }
+        }else{
+            pop[i].pref_gol[1] -= 1;
+            if(pop[i].pref_gol[1] < 1){
+                pop[i].pref_gol[1] = -(pop[i].pref_gol[1]) + 2;
+            }
+        }
+    }
+
+    fator = 1;
+    while(pop[i].pref_gol[2] == pop[i].pref_gol[1] || pop[i].pref_gol[2] == pop[i].pref_gol[0]){
+        pop[i].pref_gol[2] += fator;
+        if(pop[i].pref_gol[2] > n_gol){
+            pop[i].pref_gol[2] -= 1;
+            fator *= -1;
+        }
+    }
+
+    if(pop[i].pref_zag[1] == pop[i].pref_zag[0]){
+        r = rand()%2;
+        if(r){
+            pop[i].pref_zag[1] += 1;
+            if(pop[i].pref_zag[1] > n_zag){
+                pop[i].pref_zag[1] = 2*(n_zag) - pop[i].pref_zag[1];
+            }
+        }else{
+            pop[i].pref_zag[1] -= 1;
+            if(pop[i].pref_zag[1] < 1){
+                pop[i].pref_zag[1] = -(pop[i].pref_zag[1]) + 2;
+            }
+        }
+    }
+
+    fator = 1;
+    while(pop[i].pref_zag[2] == pop[i].pref_zag[1] || pop[i].pref_zag[2] == pop[i].pref_zag[0]){
+        pop[i].pref_zag[2] += fator;
+        if(pop[i].pref_zag[2] > n_zag){
+            pop[i].pref_zag[2] -= 1;
+            fator *= -1;
+        }
+    }
+
+    if(pop[i].pref_lat[1] == pop[i].pref_lat[0]){
+        r = rand()%2;
+        if(r){
+            pop[i].pref_lat[1] += 1;
+            if(pop[i].pref_lat[1] > n_lat){
+                pop[i].pref_lat[1] = 2*(n_lat) - pop[i].pref_lat[1];
+            }
+        }else{
+            pop[i].pref_lat[1] -= 1;
+            if(pop[i].pref_lat[1] < 1){
+                pop[i].pref_lat[1] = -(pop[i].pref_lat[1]) + 2;
+            }
+        }
+    }
+
+    fator = 1;
+    while(pop[i].pref_lat[2] == pop[i].pref_lat[1] || pop[i].pref_lat[2] == pop[i].pref_lat[0]){
+        pop[i].pref_lat[2] += fator;
+        if(pop[i].pref_lat[2] > n_lat){
+            pop[i].pref_lat[2] -= 1;
+            fator *= -1;
+        }
+    }
+
+    if(pop[i].pref_mei[1] == pop[i].pref_mei[0]){
+        r = rand()%2;
+        if(r){
+            pop[i].pref_mei[1] += 1;
+            if(pop[i].pref_mei[1] > n_mei){
+                pop[i].pref_mei[1] = 2*(n_mei) - pop[i].pref_mei[1];
+            }
+        }else{
+            pop[i].pref_mei[1] -= 1;
+            if(pop[i].pref_mei[1] < 1){
+                pop[i].pref_mei[1] = -(pop[i].pref_mei[1]) + 2;
+            }
+        }
+    }
+
+    fator = 1;
+    while(pop[i].pref_mei[2] == pop[i].pref_mei[1] || pop[i].pref_mei[2] == pop[i].pref_mei[0]){
+        pop[i].pref_mei[2] += fator;
+        if(pop[i].pref_mei[2] > n_mei){
+            pop[i].pref_mei[2] -= 1;
+            fator *= -1;
+        }
+    }
+
+    if(pop[i].pref_ata[1] == pop[i].pref_ata[0]){
+        r = rand()%2;
+        if(r){
+            pop[i].pref_ata[1] += 1;
+            if(pop[i].pref_ata[1] > n_ata){
+                pop[i].pref_ata[1] = 2*(n_ata) - pop[i].pref_ata[1];
+            }
+        }else{
+            pop[i].pref_ata[1] -= 1;
+            if(pop[i].pref_ata[1] < 1){
+                pop[i].pref_ata[1] = -(pop[i].pref_ata[1]) + 2;
+            }
+        }
+    }
+
+    fator = 1;
+    while(pop[i].pref_ata[2] == pop[i].pref_ata[1] || pop[i].pref_ata[2] == pop[i].pref_ata[0]){
+        pop[i].pref_ata[2] += fator;
+        if(pop[i].pref_ata[2] > n_ata){
+            pop[i].pref_ata[2] -= 1;
+            fator *= -1;
+        }
+    }
+
+}
+
+void verificar_preferencias_iguais_sintese(){
+
+    int r, fator;
+
+    int n_gol = get_n_ids_gol(), n_zag = get_n_ids_zag(), n_lat = get_n_ids_lat(), n_mei = get_n_ids_mei(), n_ata = get_n_ids_ata();
+
+    if(sintese.pref_gol[1] == sintese.pref_gol[0]){
+        r = rand()%2;
+        if(r){
+            sintese.pref_gol[1] += 1;
+            if(sintese.pref_gol[1] > n_gol){
+                sintese.pref_gol[1] = 2*(n_gol) - sintese.pref_gol[1];
+            }
+        }else{
+            sintese.pref_gol[1] -= 1;
+            if(sintese.pref_gol[1] < 1){
+                sintese.pref_gol[1] = -(sintese.pref_gol[1]) + 2;
+            }
+        }
+    }
+
+    fator = 1;
+    while(sintese.pref_gol[2] == sintese.pref_gol[1] || sintese.pref_gol[2] == sintese.pref_gol[0]){
+        sintese.pref_gol[2] += fator;
+        if(sintese.pref_gol[2] > n_gol){
+            sintese.pref_gol[2] -= 1;
+            fator *= -1;
+        }
+    }
+
+    if(sintese.pref_zag[1] == sintese.pref_zag[0]){
+        r = rand()%2;
+        if(r){
+            sintese.pref_zag[1] += 1;
+            if(sintese.pref_zag[1] > n_zag){
+                sintese.pref_zag[1] = 2*(n_zag) - sintese.pref_zag[1];
+            }
+        }else{
+            sintese.pref_zag[1] -= 1;
+            if(sintese.pref_zag[1] < 1){
+                sintese.pref_zag[1] = -(sintese.pref_zag[1]) + 2;
+            }
+        }
+    }
+
+    fator = 1;
+    while(sintese.pref_zag[2] == sintese.pref_zag[1] || sintese.pref_zag[2] == sintese.pref_zag[0]){
+        sintese.pref_zag[2] += fator;
+        if(sintese.pref_zag[2] > n_zag){
+            sintese.pref_zag[2] -= 1;
+            fator *= -1;
+        }
+    }
+
+    if(sintese.pref_lat[1] == sintese.pref_lat[0]){
+        r = rand()%2;
+        if(r){
+            sintese.pref_lat[1] += 1;
+            if(sintese.pref_lat[1] > n_lat){
+                sintese.pref_lat[1] = 2*(n_lat) - sintese.pref_lat[1];
+            }
+        }else{
+            sintese.pref_lat[1] -= 1;
+            if(sintese.pref_lat[1] < 1){
+                sintese.pref_lat[1] = -(sintese.pref_lat[1]) + 2;
+            }
+        }
+    }
+
+    fator = 1;
+    while(sintese.pref_lat[2] == sintese.pref_lat[1] || sintese.pref_lat[2] == sintese.pref_lat[0]){
+        sintese.pref_lat[2] += fator;
+        if(sintese.pref_lat[2] > n_lat){
+            sintese.pref_lat[2] -= 1;
+            fator *= -1;
+        }
+    }
+
+    if(sintese.pref_mei[1] == sintese.pref_mei[0]){
+        r = rand()%2;
+        if(r){
+            sintese.pref_mei[1] += 1;
+            if(sintese.pref_mei[1] > n_mei){
+                sintese.pref_mei[1] = 2*(n_mei) - sintese.pref_mei[1];
+            }
+        }else{
+            sintese.pref_mei[1] -= 1;
+            if(sintese.pref_mei[1] < 1){
+                sintese.pref_mei[1] = -(sintese.pref_mei[1]) + 2;
+            }
+        }
+    }
+
+    fator = 1;
+    while(sintese.pref_mei[2] == sintese.pref_mei[1] || sintese.pref_mei[2] == sintese.pref_mei[0]){
+        sintese.pref_mei[2] += fator;
+        if(sintese.pref_mei[2] > n_mei){
+            sintese.pref_mei[2] -= 1;
+            fator *= -1;
+        }
+    }
+
+    if(sintese.pref_ata[1] == sintese.pref_ata[0]){
+        r = rand()%2;
+        if(r){
+            sintese.pref_ata[1] += 1;
+            if(sintese.pref_ata[1] > n_ata){
+                sintese.pref_ata[1] = 2*(n_ata) - sintese.pref_ata[1];
+            }
+        }else{
+            sintese.pref_ata[1] -= 1;
+            if(sintese.pref_ata[1] < 1){
+                sintese.pref_ata[1] = -(sintese.pref_ata[1]) + 2;
+            }
+        }
+    }
+
+    fator = 1;
+    while(sintese.pref_ata[2] == sintese.pref_ata[1] || sintese.pref_ata[2] == sintese.pref_ata[0]){
+        sintese.pref_ata[2] += fator;
+        if(sintese.pref_ata[2] > n_ata){
+            sintese.pref_ata[2] -= 1;
+            fator *= -1;
+        }
+    }
 
 }
