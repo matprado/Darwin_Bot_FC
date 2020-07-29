@@ -7,3 +7,5 @@ Trabalho desenvolvido durante minha graduação em Ciências de Computação na 
 Link do repositório da disciplina: https://gitlab.com/simoesusp/disciplinas/tree/master/SSC0713-Sistemas-Evolutivos-Aplicados-a-Robotica
 
 Créditos ao repositório https://github.com/henriquepgomide/caRtola pelos dados disponibilizados do Cartola FC de 2014 até 2019;
+
+Link para o vídeo explicando o projeto: https://drive.google.com/file/d/1myjXGCNM0E1j4fqtTQJkjCgbfLeD2YHg/view?usp=sharing
