@@ -3,12 +3,12 @@
 
 #include <time.h>
 
-#define TAM_POP 10
-#define TAXA_MUT_INI 0.1
+#define TAM_POP 30
+#define TAXA_MUT_INI 0.05
 #define LIMITE_TAXA_MUT 1
-#define FATOR_MUTACAO 1.25
-#define SOMA_MUTACAO 0.1
-#define N_IGUAIS_CONSECUTIVOS 5
+#define FATOR_MUTACAO 1.15
+#define SOMA_MUTACAO 0.05
+#define N_IGUAIS_CONSECUTIVOS 10
 
 #define GERACOES_PREDACAO 10
 
@@ -17,7 +17,7 @@
 #define FATOR_MUTACAO_FOR 2
 #define DELTA 1
 
-#define NUM_GEN_TOTAL 10
+#define NUM_GEN_TOTAL 2
 
 //Estrutura de um cromossomo(ou indivíduo)
 typedef struct cromossomo Cromossomo;
@@ -31,6 +31,8 @@ void big_bang();
 void limpar_memoria_alocada_ag();
 
 void definir_formacao(int pos, int formacao);
+
+void definir_formacao_bester(int formacao);
 
 int *get_3_aleatorios_diferentes_entre(int a, int b);
 

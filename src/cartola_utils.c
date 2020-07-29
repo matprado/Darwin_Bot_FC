@@ -60,6 +60,8 @@ struct atleta{
     int pp[MAX_RODADAS]; //pênatils perdidos: -4.0
     int gc[MAX_RODADAS]; //gols contra: -5.0
     int dp[MAX_RODADAS]; //defesa de pênalti: +7.0
+
+    int tec_qtd;
 };
 
 struct time{
@@ -75,51 +77,86 @@ int id_atleta_atual = -1;
 Time *times; //Vetor com todos os times
 #define MAX_ID_TIMES 500
 
+struct time_escolhido{
+    int id_time;
+    int qtd;
+};
+
+#define MOD 100
+#define MENOR_ID 14
+#define MAIOR_ID 93
+#define TAM_TIMES (MAIOR_ID - MENOR_ID)+1
+
 float get_pontuacao_media(int quant_pos[6], int pref_gol[3], int pref_zag[3], int pref_lat[3], int pref_mei[3], int pref_ata[3], int capitao){
  
     float pontuacao_acumulada = 0;
     float cartoletas = 100, valorizacao = 0, cart_atual;
     int faltam;
 
+    Atleta **copia_gol, **copia_zag, **copia_lat, **copia_mei, **copia_ata, **copia_tec;
+
+    //Posso usar mod100 para vetor de 100 posicoes para tecnico. Em outros anos, precisa verificar isso...
+    TimeEscolhido *times;
+
     //para cada rodada do campeonato...
     //pulando a primeira...
     for(int i=2; i<MAX_RODADAS; i++){
 
+        times = (TimeEscolhido *) calloc(TAM_TIMES, sizeof(TimeEscolhido));
+
+        for(int j=0; j<rodadas[i-1].n_tec; j++){
+            times[((rodadas[i-1].tec[j]->id_clube)%MOD)-MENOR_ID].id_time = rodadas[i-1].tec[j]->id_clube;
+        }
+
         //Escala um time e registra a pontuação na rodada
        
-        //PULA O TÉCNICO
+        //PARA O TÉCNICO, ESCOLHE O TECNICO DO TIME COM MAIS JOGADORES ESCALADOS
 
-        faltam = 11;
+        faltam = 12;
         valorizacao = 0;
         cart_atual = cartoletas;
 
-        printf("\t*****rodada %d:*****\n", i);
-        
+        printf("\t*****rodada %d:*****\n", i);    
+
+        copia_gol = get_copia_goleiros_rodada(i-1);
         printf("  (goleiro):\n");
-        pontuacao_acumulada += escolhe_atletas_rodada(quant_pos[1], rodadas[i].n_gol, rodadas[i].gol, i, get_comparador_gol(pref_gol[0]), get_comparador_gol(pref_gol[1]), get_comparador_gol(pref_gol[2]), &cartoletas, &faltam, &valorizacao, (capitao==1));
-        //free(copia_goleiros);
+        pontuacao_acumulada += escolhe_atletas_rodada(quant_pos[1], rodadas[i-1].n_gol, copia_gol, i-1, get_comparador_gol(pref_gol[0]), get_comparador_gol(pref_gol[1]), get_comparador_gol(pref_gol[2]), &cartoletas, &faltam, &valorizacao, (capitao==1), times);
+        free(copia_gol);
 
+        copia_zag = get_copia_zagueiros_rodada(i-1);
         printf("  (zagueiros):\n");
-        pontuacao_acumulada += escolhe_atletas_rodada(quant_pos[2], rodadas[i].n_zag, rodadas[i].zag, i, get_comparador_zag(pref_zag[0]), get_comparador_zag(pref_zag[1]), get_comparador_zag(pref_zag[2]), &cartoletas, &faltam, &valorizacao, (capitao==2));
-        //free(copia_zagueiros);
+        pontuacao_acumulada += escolhe_atletas_rodada(quant_pos[2], rodadas[i-1].n_zag, copia_zag, i-1, get_comparador_zag(pref_zag[0]), get_comparador_zag(pref_zag[1]), get_comparador_zag(pref_zag[2]), &cartoletas, &faltam, &valorizacao, (capitao==2), times);
+        free(copia_zag);
 
+        copia_lat = get_copia_laterais_rodada(i-1);
         printf("  (laterais):\n");
-        pontuacao_acumulada += escolhe_atletas_rodada(quant_pos[3], rodadas[i].n_lat, rodadas[i].lat, i, get_comparador_lat(pref_lat[0]), get_comparador_lat(pref_lat[1]), get_comparador_lat(pref_lat[2]), &cartoletas, &faltam, &valorizacao, (capitao==3));
-        //free(copia_laterais);
+        pontuacao_acumulada += escolhe_atletas_rodada(quant_pos[3], rodadas[i-1].n_lat, copia_lat, i-1, get_comparador_lat(pref_lat[0]), get_comparador_lat(pref_lat[1]), get_comparador_lat(pref_lat[2]), &cartoletas, &faltam, &valorizacao, (capitao==3), times);
+        free(copia_lat);
 
+        copia_mei = get_copia_meias_rodada(i-1);
         printf("  (meias):\n");
-        pontuacao_acumulada += escolhe_atletas_rodada(quant_pos[4], rodadas[i].n_mei, rodadas[i].mei, i, get_comparador_mei(pref_mei[0]), get_comparador_mei(pref_mei[1]), get_comparador_mei(pref_mei[2]), &cartoletas, &faltam, &valorizacao, (capitao==4));
-        //free(copia_meias);
+        pontuacao_acumulada += escolhe_atletas_rodada(quant_pos[4], rodadas[i-1].n_mei, copia_mei, i-1, get_comparador_mei(pref_mei[0]), get_comparador_mei(pref_mei[1]), get_comparador_mei(pref_mei[2]), &cartoletas, &faltam, &valorizacao, (capitao==4), times);
+        free(copia_mei);
         
+        copia_ata = get_copia_atacantes_rodada(i-1);
         printf("  (atacantes):\n");
-        pontuacao_acumulada += escolhe_atletas_rodada(quant_pos[5], rodadas[i].n_ata, rodadas[i].ata, i, get_comparador_ata(pref_ata[0]), get_comparador_ata(pref_ata[1]), get_comparador_ata(pref_ata[2]), &cartoletas, &faltam, &valorizacao, (capitao==5));     
-        //free(copia_atacantes);
+        pontuacao_acumulada += escolhe_atletas_rodada(quant_pos[5], rodadas[i-1].n_ata, copia_ata, i-1, get_comparador_ata(pref_ata[0]), get_comparador_ata(pref_ata[1]), get_comparador_ata(pref_ata[2]), &cartoletas, &faltam, &valorizacao, (capitao==5), times);     
+        free(copia_ata);
+
+        copia_tec = get_copia_tecnicos_rodada(i-1);
+        printf("  (técnico):\n");
+        pontuacao_acumulada += escolhe_tecnico_rodada(rodadas[i-1].n_tec, copia_tec, i-1, &cartoletas, &valorizacao, (capitao==6), times);
+        free(copia_tec);
 
         cartoletas = cart_atual + valorizacao;
 
         printf("\n");
 
+        free(times);
+
     }
+
+    printf("O time terminou com %.2f cartoletas\n\n", cartoletas);
 
     return (pontuacao_acumulada / (MAX_RODADAS-1)); //tirando a primeira rodada
 
@@ -129,7 +166,7 @@ float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodad
     int (*comparador1)(Atleta *, Atleta *, int), 
     int (*comparador2)(Atleta *, Atleta *, int), 
     int (*comparador3)(Atleta *, Atleta *, int),
-    float *cartoletas, int *faltam, float *valorizacao, int eh_capitao){
+    float *cartoletas, int *faltam, float *valorizacao, int eh_capitao, TimeEscolhido *times){
 
     if(qtd_atl == 0){
         printf("Sem atletas desta posição!\n");
@@ -138,7 +175,7 @@ float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodad
 
     int (*comparador)(Atleta *, Atleta *, int) = comparador1;
 
-    ordena_vetor_rodada(atletas, total, comparador, rodada-1);
+    ordena_vetor_rodada(atletas, total, comparador, rodada);
 
     float cartoletasDisponiveis;
 
@@ -152,7 +189,7 @@ float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodad
         j=i;
 
         comparador = comparador1;
-        while(i<(total-1) && (!comparador(atletas[i], atletas[i+1], rodada-1))){
+        while(i<(total-1) && (!comparador(atletas[i], atletas[i+1], rodada))){
             //testa com o comparador: se o teste falhar, só pode significar empate.
             i++;
         }
@@ -162,21 +199,21 @@ float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodad
         if(j!=k){
             //desempate dos iguais
             comparador = comparador2;
-            merge_sort(atletas, j, k, comparador, rodada-1);
+            merge_sort(atletas, j, k, comparador, rodada);
         }
 
         i++;
     }
     
     //Neste momento, está ordenado com as preferências 1 e 2.
-    //Caso necessário, vamos desempatar com a preferência 4
+    //Caso necessário, vamos desempatar com a preferência 3
     i=0;
     while(i<(total-1)){
 
         j=i;
 
         comparador = comparador2;
-        while(i<(total-1) && (!comparador(atletas[i], atletas[i+1], rodada-1))){
+        while(i<(total-1) && (!comparador(atletas[i], atletas[i+1], rodada))){
             //testa com o comparador: se o teste falhar, só pode significar empate.
             i++;
         }
@@ -186,7 +223,7 @@ float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodad
         if(j!=k){
             //desempate dos iguais
             comparador = comparador3;
-            merge_sort(atletas, j, k, comparador, rodada-1);
+            merge_sort(atletas, j, k, comparador, rodada);
         }
 
         i++;
@@ -198,23 +235,25 @@ float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodad
     i=0;
     while(i<(total-1) && ja_escolhidos<qtd_atl){
         
-        preco = atletas[i]->preco[rodada-1];
+        preco = atletas[i]->preco[rodada];
 
         if(preco <= cartoletasDisponiveis){
             //Pode comprar o jogador       
-            imprimir_atleta_rodada(atletas[i], rodada);
+            imprimir_atleta_rodada(atletas[i], rodada+1);
             
+            times[((atletas[i]->id_clube)%MOD)-MENOR_ID].qtd += 1;
+
             (*cartoletas) = (*cartoletas) - preco;
             (*faltam) = (*faltam) - 1;
             if(*faltam != 0){
                 cartoletasDisponiveis = (*cartoletas) / (*faltam);
             }
-            (*valorizacao) = (*valorizacao) + atletas[i]->valorizacao[rodada];
+            (*valorizacao) = (*valorizacao) + atletas[i]->valorizacao[rodada+1];
 
             if(eh_capitao && ja_escolhidos == 0){
-                pontuacao += ((atletas[i])->media[rodada] * 2);
+                pontuacao += ((atletas[i])->media[rodada+1] * 2);
             }else{
-                pontuacao += (atletas[i])->media[rodada];
+                pontuacao += (atletas[i])->media[rodada+1];
             }
             
             ja_escolhidos++;
@@ -230,10 +269,10 @@ float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodad
     while(j < qtd_atl){
 
         //Sei que o atual é, realmente, o melhor
-        if(comparador(atletas[j], atletas[qtd_atl], rodada-1)){
+        if(comparador(atletas[j], atletas[qtd_atl], rodada)){
        
             //Tenta comprar
-            preco = atletas[j]->preco[rodada-1];
+            preco = atletas[j]->preco[rodada];
             if(preco <= cartoletasDisponiveis){
                 //Pode comprar o jogador       
                 imprimir_atleta_rodada(atletas[j], rodada);
@@ -264,8 +303,8 @@ float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodad
     int n=0;
 
     //testa com o comparador: se o teste falhar, só pode significar empate. Pega os primeiros empatados e desempata
-    while ((j < total) && (!comparador(atletas[j], atletas[j+1], rodada-1))){
-        preco = atletas[j]->preco[rodada-1];
+    while ((j < total) && (!comparador(atletas[j], atletas[j+1], rodada))){
+        preco = atletas[j]->preco[rodada];
         if(preco <= cartoletasDisponiveis){
             aux[n++] = atletas[j];
         }
@@ -279,7 +318,7 @@ float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodad
 
         //tem que desempatar com a proxima preferencia!
         comparador = comparador2;
-        merge_sort(atletas, ja_escolhidos, j-1, comparador, rodada-1);
+        merge_sort(atletas, ja_escolhidos, j-1, comparador, rodada);
 
         //TEM QUE CONFERIR TUDO DE NOVO PARA A PROXIMA PREFERENCIA        
         
@@ -287,7 +326,7 @@ float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodad
         j = ja_escolhidos;
 
         while(j < qtd_atl){
-            if(comparador(atletas[j], atletas[qtd_atl-1], rodada-1)){
+            if(comparador(atletas[j], atletas[qtd_atl-1], rodada)){
                 ja_escolhidos++;
             }
             j++;
@@ -295,7 +334,7 @@ float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodad
 
         // j == qtd_atl
     
-        while ((j < total) && (!comparador(atletas[j-1], atletas[j], rodada-1))){
+        while ((j < total) && (!comparador(atletas[j-1], atletas[j], rodada))){
             //testa com o comparador: se o teste falhar, só pode significar empate. Pega os primeiros empatados e desempata
             j++;
         }
@@ -303,14 +342,69 @@ float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodad
         if(j > qtd_atl){
             //tem que desempatar com a proxima preferencia!
             comparador = comparador3;
-            merge_sort(atletas, ja_escolhidos, j-1, comparador, rodada-1);
+            merge_sort(atletas, ja_escolhidos, j-1, comparador, rodada);
         }
     }
     return pontuacao;
     */
 
-    
+}
 
+float escolhe_tecnico_rodada(int total, Atleta **atletas, int rodada, float *cartoletas, float *valorizacao, int eh_capitao, TimeEscolhido *times){
+
+    merge_sort_2(times, 0, TAM_TIMES-1, compara_time_mais_escalado);
+
+    int i=0, j=0, ja_escolhidos=0;
+    float preco, pontuacao=0;
+    while(ja_escolhidos<1 && i<(TAM_TIMES)){ 
+
+        j=0;
+        while(ja_escolhidos<1 && j<(total-1)){
+                
+            if(times[i].id_time == atletas[j]->id_clube){
+            
+                preco = atletas[j]->preco[rodada];
+
+                if(preco <= (*cartoletas)){
+
+                    //Pode comprar o jogador       
+                    imprimir_atleta_rodada(atletas[j], rodada+1);
+
+                    (*cartoletas) = (*cartoletas) - preco;
+
+                    (*valorizacao) = (*valorizacao) + atletas[j]->valorizacao[rodada+1];
+
+                    if(eh_capitao){
+                        pontuacao += ((atletas[j])->media[rodada+1] * 2);
+                    }else{
+                        pontuacao += (atletas[j])->media[rodada+1];
+                    }
+                    
+                    ja_escolhidos++;
+
+                }else{
+                    //Tenta outro time
+                    j=(total-1);
+                }
+                
+            }else{
+
+                j++;
+            
+            }      
+
+        }
+
+        i++;
+
+    }
+
+    return pontuacao;
+
+}
+
+int compara_time_mais_escalado(TimeEscolhido a, TimeEscolhido b){
+    return (a.qtd > b.qtd);
 }
 
 
@@ -986,4 +1080,46 @@ Atleta **get_copia_atacantes_rodada(int i){
         copia[j] = rodadas[i].ata[j];
     }
     return copia;
+}
+
+Atleta **get_copia_tecnicos_rodada(int i){
+    int n = rodadas[i].n_tec;
+    Atleta **copia = (Atleta **) malloc(n * sizeof(Atleta *));
+    for(int j=0; j<n; j++){
+        copia[j] = rodadas[i].tec[j];
+    }
+    return copia;
+}
+
+void merge_sort_2(TimeEscolhido *vet, int ini, int fim, int (*comparador)(TimeEscolhido , TimeEscolhido)){
+	if(fim <= ini)	return;
+	int meio = (int) (ini+fim)/2;	
+	merge_sort_2(vet, ini, meio, comparador);
+	merge_sort_2(vet, meio+1, fim, comparador);
+	merge_2(vet, ini, meio, fim, comparador);
+}
+/*Função merge(intercala):
+ Pega dois vetores previamente ordenados e os intercala formando um só vetor ordenado*/
+void merge_2(TimeEscolhido *vet, int ini, int meio, int fim, int (*comparador)(TimeEscolhido, TimeEscolhido)){
+	TimeEscolhido*aux = (TimeEscolhido*) malloc((fim-ini+1) * sizeof(TimeEscolhido));
+	int i, j, k;	
+    for(i=ini, j=meio+1, k=0; i<=meio && j<=fim; k++){	//Ordena os dois 'blocos'
+    	//QUEM EU QUERO ANTES? O MENOR OU O MAIOR?
+        //printf("veti: %p\n", vet[i]);
+        //printf("vetj: %p\n", vet[j]);
+        if(comparador(vet[i], vet[j]))
+    		aux[k] = vet[i++];
+    	else
+    		aux[k] = vet[j++];
+    }
+    while(i <= meio){  //Caso ainda haja elementos na primeira metade
+        aux[k++] = vet[i++];
+    }
+    while(j <= fim){   //Caso ainda haja elementos na segunda metade
+        aux[k++] = vet[j++];
+    }
+    for(k = ini; k <= fim; k++){//Move os elementos de volta para o vetor original
+        vet[k] = aux[k-ini];
+    }
+    free(aux);
 }

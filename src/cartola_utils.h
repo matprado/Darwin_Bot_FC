@@ -16,13 +16,17 @@ typedef struct rodada Rodada;
 typedef struct atleta Atleta;
 typedef struct time Time;
 
+typedef struct time_escolhido TimeEscolhido;
+
 float get_pontuacao_media(int quant_pos[6], int pref_gol[3], int pref_zag[3], int pref_lat[3], int pref_mei[3], int pref_ata[3], int capitao);
 
 float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodada, 
     int (*comparador1)(Atleta *, Atleta *, int), 
     int (*comparador2)(Atleta *, Atleta *, int), 
     int (*comparador3)(Atleta *, Atleta *, int),
-    float *cartoletas, int *faltam, float *valorizacao, int eh_capitao);
+    float *cartoletas, int *faltam, float *valorizacao, int eh_capitao, TimeEscolhido *times);
+
+float escolhe_tecnico_rodada(int total, Atleta **atletas, int rodada, float *cartoletas, float *valorizacao, int eh_capitao, TimeEscolhido *times);
 
 int ler_csv_campeonato();
 void ler_linha_csv(FILE *csv);
@@ -32,6 +36,7 @@ void imprimir_atleta_rodada(Atleta *atleta, int rodada);
 void imprimir_atleta_campeonato(Atleta *atleta);
 void imprimir_todos_atletas();
 
+int compara_time_mais_escalado(TimeEscolhido a, TimeEscolhido b);
 int compara_media_maior(Atleta *a, Atleta *b, int rodada);
 int compara_preco_maior(Atleta *a, Atleta *b, int rodada);
 int compara_valorizacao_maior(Atleta *a, Atleta *b, int rodada);
@@ -72,5 +77,9 @@ Atleta **get_copia_zagueiros_rodada(int i);
 Atleta **get_copia_laterais_rodada(int i);
 Atleta **get_copia_meias_rodada(int i);
 Atleta **get_copia_atacantes_rodada(int i);
+Atleta **get_copia_tecnicos_rodada(int i);
+
+void merge_sort_2(TimeEscolhido *vet, int ini, int fim, int (*comparador)(TimeEscolhido , TimeEscolhido));
+void merge_2(TimeEscolhido *vet, int ini, int meio, int fim, int (*comparador)(TimeEscolhido, TimeEscolhido));
 
 #endif

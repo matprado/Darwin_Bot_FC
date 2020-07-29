@@ -48,7 +48,7 @@ struct cromossomo{
 
 //Melhor EVER, TEM QUE SABER QUEM É ESSE CARA SEMPRE, NÃO PODE MUTAR ELE
 Cromossomo the_best_of_the_bester;
-float the_best_of_the_bester_fitness = 0;
+float the_best_of_the_bester_fitness = -10000;
 
 int the_bester; //Melhor atual da população
 Cromossomo pop[TAM_POP]; //População de indivíduos/cromossomos
@@ -58,6 +58,7 @@ int n_geracao = 0;
 float besters[100000];
 FILE *melhor_fitness;
 FILE *media_fitness;
+FILE *melhor_fitness_atual;
 FILE *backup;
 int iguais_consecutivos = 0;
 double taxa_mutacao = TAXA_MUT_INI;
@@ -109,9 +110,8 @@ void big_bang(){
             pop[i].mando_pos[i] = rand() % 2;
         }*/
 
-        //capitao: entre 1 e 5
-        //LEMBRAR DO TECNICO AUMENTAR PRA 6
-        pop[i].capitao = (rand() % 5) + 1;
+        //capitao: entre 1 e 6
+        pop[i].capitao = (rand() % 6) + 1;
 
         //Define, aleatoriamente, as 3 preferências de escalação para cada posição
         pop[i].pref_gol = get_3_aleatorios_diferentes_entre(1, get_n_ids_gol());
@@ -158,6 +158,7 @@ void limpar_memoria_alocada_ag(){
     free(sintese.pref_ata);
     fclose(melhor_fitness);
     fclose(media_fitness);
+    fclose(melhor_fitness_atual);
     fclose(backup);
 }
 
@@ -235,6 +236,80 @@ void definir_formacao(int pos, int formacao){
 
 }
 
+void definir_formacao_bester(int formacao){
+    
+    /* 1 : 3-2-4-1 ou 5-4-1
+       2 : 2-2-5-1 ou 4-5-1
+       3 : 3-2-3-2 ou 5-3-2
+       4 : 3-0-5-2 ou 3-5-2
+       5 : 2-2-4-2 ou 4-4-2
+       6 : 3-0-4-3 ou 3-4-3
+       7 : 2-2-3-3 ou 4-3-3*/
+
+    //Sempre temos 1 tecnico e 1 goleiro
+    the_best_of_the_bester.quant_pos[0] = 1;
+    the_best_of_the_bester.quant_pos[1] = 1;
+
+    the_best_of_the_bester.formacao = formacao;
+
+    switch(formacao){
+
+        case 1:
+            the_best_of_the_bester.quant_pos[2] = 3;
+            the_best_of_the_bester.quant_pos[3] = 2;
+            the_best_of_the_bester.quant_pos[4] = 4;
+            the_best_of_the_bester.quant_pos[5] = 1;
+            break;
+
+        case 2:
+            the_best_of_the_bester.quant_pos[2] = 2;
+            the_best_of_the_bester.quant_pos[3] = 2;
+            the_best_of_the_bester.quant_pos[4] = 5;
+            the_best_of_the_bester.quant_pos[5] = 1;
+            break;
+
+        case 3:
+            the_best_of_the_bester.quant_pos[2] = 3;
+            the_best_of_the_bester.quant_pos[3] = 2;
+            the_best_of_the_bester.quant_pos[4] = 3;
+            the_best_of_the_bester.quant_pos[5] = 2;
+            break;
+
+        case 4:
+            the_best_of_the_bester.quant_pos[2] = 3;
+            the_best_of_the_bester.quant_pos[3] = 0;
+            the_best_of_the_bester.quant_pos[4] = 5;
+            the_best_of_the_bester.quant_pos[5] = 2;
+            break;
+        
+        case 5:
+            the_best_of_the_bester.quant_pos[2] = 2;
+            the_best_of_the_bester.quant_pos[3] = 2;
+            the_best_of_the_bester.quant_pos[4] = 4;
+            the_best_of_the_bester.quant_pos[5] = 2;
+            break;
+
+        case 6:
+            the_best_of_the_bester.quant_pos[2] = 3;
+            the_best_of_the_bester.quant_pos[3] = 0;
+            the_best_of_the_bester.quant_pos[4] = 4;
+            the_best_of_the_bester.quant_pos[5] = 3;
+            break;
+
+        case 7:
+            the_best_of_the_bester.quant_pos[2] = 2;
+            the_best_of_the_bester.quant_pos[3] = 2;
+            the_best_of_the_bester.quant_pos[4] = 3;
+            the_best_of_the_bester.quant_pos[5] = 3;
+            break;
+
+        default:
+            printf("ERRO na formação");
+            break;
+    }
+
+}
+
 int *get_3_aleatorios_diferentes_entre(int a, int b){
 
     int *vet = (int *) malloc(3 * sizeof(int));
@@ -280,7 +355,8 @@ void avalia_populacao(){
         if(fitness[i] > maior){
             maior = fitness[i];
             the_bester = i;
-        }else if(fitness[i] < menor){
+        }
+        if(fitness[i] < menor){
             menor = fitness[i];
             the_worst = i;
         }
@@ -475,11 +551,11 @@ void mutacao(int i){
     }
     definir_formacao(i, formacao);
 
-    int capitao = pop[i].capitao + converte(((rand() % 5 - 2) * taxa_mutacao_for));
+    int capitao = pop[i].capitao + converte(((rand() % 6 - 2) * taxa_mutacao_for));
     //Ajeitar Valores fora dos limites
     if(capitao < 1) capitao = (-capitao) + 2;
-    else if(capitao > 5){
-        capitao = 10 - capitao;
+    else if(capitao > 6){
+        capitao = 12 - capitao;
     }
 
     int n_gol = get_n_ids_gol(), n_zag = get_n_ids_zag(), n_lat = get_n_ids_lat(), n_mei = get_n_ids_mei(), n_ata = get_n_ids_ata();
@@ -538,7 +614,8 @@ void mutacao_dinamica(){
     if(n_geracao>0 && besters[n_geracao] == besters[n_geracao-1]){
         iguais_consecutivos++;
         if(iguais_consecutivos == N_IGUAIS_CONSECUTIVOS){
-            taxa_mutacao += SOMA_MUTACAO;
+            //taxa_mutacao += SOMA_MUTACAO;
+            taxa_mutacao *= FATOR_MUTACAO;
             //Taxa de Mutação chega no seu limite máximo:
             if(taxa_mutacao > LIMITE_TAXA_MUT){
                 //Reseta:
@@ -561,19 +638,19 @@ void mutacao_dinamica(){
 }
 
 void mutacao_dinamica_delta(){
-    if((the_best_of_the_bester_fitness - fitness_medio) <= DELTA){
+    if((fitness[the_bester] - fitness_medio) <= DELTA){
         //taxa_mutacao *= FATOR_MUTACAO;
         taxa_mutacao_for *= FATOR_MUTACAO_FOR;
         //Taxa de Mutação chega no seu limite máximo:
         if(taxa_mutacao_for > LIMITE_TAXA_MUT_FOR){
             taxa_mutacao_for = TAXA_MUT_INI_FOR;
             //Genocídio:
-            if(tipo_genocidio){
+            /*if(tipo_genocidio){
                 genocidio_total();
             }else{
                 genocidio_parcial();
             }
-            tipo_genocidio = (tipo_genocidio + 1) % 2;
+            tipo_genocidio = (tipo_genocidio + 1) % 2;*/
         }
     }else{
         taxa_mutacao_for = TAXA_MUT_INI_FOR;
@@ -588,6 +665,8 @@ void criar_grafico_fitness(){
     //printf("Digite o nome do arquivo da média de fitness: ");
     //scanf("%s%*c", nome);
     media_fitness = fopen("data/media_fitness.dat", "w+");
+
+    melhor_fitness_atual = fopen("data/melhor_fitness_atual.dat", "w+");
 }
 
 void incrementar_grafico_fitness(){
@@ -598,19 +677,25 @@ void incrementar_grafico_fitness(){
     //printf("Digite o nome do arquivo da média de fitness: ");
     //scanf("%s%*c", nome);
     media_fitness = fopen("data/media_fitness.dat", "a+");
+
+    melhor_fitness_atual = fopen("data/melhor_fitness_atual.dat", "a+");
+
 }
 
 void atualizar_grafico_fitness(){
     //Vetor de melhores a cada geração
-    //besters[n_geracao] = fitness[the_bester];
-    besters[n_geracao] = the_best_of_the_bester_fitness;
+    besters[n_geracao] = fitness[the_bester];
+    //besters[n_geracao] = the_best_of_the_bester_fitness;
 
-    //Guarda o melhor por geração no arquivo melhor_fitness.dat
+    //Guarda o melhor de todos no arquivo melhor_fitness.dat
     //fprintf(melhor_fitness, "%d\t%f\n", n_geracao+geracao_total, fitness[the_bester]);
     fprintf(melhor_fitness, "%d\t%f\n", n_geracao+geracao_total, the_best_of_the_bester_fitness);
     
     //Guarda a média de fitness por geração no arquivo media_fitness.dat
     fprintf(media_fitness, "%d\t%f\n", n_geracao+geracao_total, fitness_medio);
+
+    //Guarda o melhor por geração no arquivo melhor_fitness_atual.dat
+    fprintf(melhor_fitness_atual, "%d\t%f\n", n_geracao+geracao_total, fitness[the_bester]);
 }
 
 void predacao_sintese(){
@@ -638,9 +723,8 @@ void predacao_aleatoria(){
     //define a formacao
     definir_formacao(the_worst, formacao);
 
-    //capitao: entre 1 e 5
-    //LEMBRAR DO TECNICO AUMENTAR PRA 6
-    pop[the_worst].capitao = (rand() % 5) + 1;
+    //capitao: entre 1 e 6
+    pop[the_worst].capitao = (rand() % 6) + 1;
 
 
     //Define, aleatoriamente, as 3 preferências de escalação para cada posição
@@ -670,9 +754,8 @@ void genocidio_total(){
             pop[i].mando_pos[i] = rand() % 2;
         }*/
 
-        //capitao: entre 1 e 5
-        //LEMBRAR DO TECNICO AUMENTAR PRA 6
-        pop[i].capitao = (rand() % 5) + 1;
+        //capitao: entre 1 e 6
+        pop[i].capitao = (rand() % 6) + 1;
 
         //Define, aleatoriamente, as 3 preferências de escalação para cada posição
         free(pop[i].pref_gol);
@@ -705,9 +788,8 @@ void genocidio_parcial(){
             pop[i].mando_pos[i] = rand() % 2;
         }*/
 
-        //capitao: entre 1 e 5
-        //LEMBRAR DO TECNICO AUMENTAR PRA 6
-        pop[i].capitao = (rand() % 5) + 1;
+        //capitao: entre 1 e 6
+        pop[i].capitao = (rand() % 6) + 1;
 
         //Define, aleatoriamente, as 3 preferências de escalação para cada posição
         free(pop[i].pref_gol);
@@ -808,6 +890,7 @@ void recuperar_dados_ag(){
     backup = fopen("data/backup.txt", "r+");
 
     fscanf(backup, "%d%*c", &the_best_of_the_bester.formacao);
+    definir_formacao_bester(the_best_of_the_bester.formacao);
     fscanf(backup, "%d%*c", &the_best_of_the_bester.capitao);
     the_best_of_the_bester.pref_gol = (int *) malloc(3 * sizeof(int));
     the_best_of_the_bester.pref_zag = (int *) malloc(3 * sizeof(int));
