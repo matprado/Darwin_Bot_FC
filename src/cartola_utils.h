@@ -20,6 +20,8 @@ typedef struct time_escolhido TimeEscolhido;
 
 float get_pontuacao_media(int quant_pos[6], int pref_gol[3], int pref_zag[3], int pref_lat[3], int pref_mei[3], int pref_ata[3], int capitao);
 
+float escala_campeonato(Rodada *rodadas, Atleta **atletas, int n_rodadas, int quant_pos[6], int pref_gol[3], int pref_zag[3], int pref_lat[3], int pref_mei[3], int pref_ata[3], int capitao);
+
 float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodada, 
     int (*comparador1)(Atleta *, Atleta *, int), 
     int (*comparador2)(Atleta *, Atleta *, int), 
@@ -29,8 +31,7 @@ float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodad
 float escolhe_tecnico_rodada(int total, Atleta **atletas, int rodada, float *cartoletas, float *valorizacao, int eh_capitao, TimeEscolhido *times);
 
 int ler_csv_campeonato();
-void ler_linha_csv(FILE *csv);
-void ler_linha_csv_tabela(FILE *csv);
+void ler_linha_csv(FILE *csv, Rodada *rodadas, Atleta **atletas);
 void limpar_memoria_alocada_cartola();
 void imprimir_atleta_rodada(Atleta *atleta, int rodada);
 void imprimir_atleta_campeonato(Atleta *atleta);
@@ -72,12 +73,12 @@ void ordena_vetor_rodada(Atleta **vet, int tam, int (*comparador)(Atleta *, Atle
 void merge_sort(Atleta **vet, int ini, int fim, int (*comparador)(Atleta *, Atleta *, int), int rodada);
 void merge(Atleta **vet, int ini, int meio, int fim, int (*comparador)(Atleta *, Atleta *, int), int rodada);
 
-Atleta **get_copia_goleiros_rodada(int i);
-Atleta **get_copia_zagueiros_rodada(int i);
-Atleta **get_copia_laterais_rodada(int i);
-Atleta **get_copia_meias_rodada(int i);
-Atleta **get_copia_atacantes_rodada(int i);
-Atleta **get_copia_tecnicos_rodada(int i);
+Atleta **get_copia_goleiros_rodada(int i, Rodada *rodadas);
+Atleta **get_copia_zagueiros_rodada(int i, Rodada *rodadas);
+Atleta **get_copia_laterais_rodada(int i, Rodada *rodadas);
+Atleta **get_copia_meias_rodada(int i, Rodada *rodadas);
+Atleta **get_copia_atacantes_rodada(int i, Rodada *rodadas);
+Atleta **get_copia_tecnicos_rodada(int i, Rodada *rodadas);
 
 void merge_sort_2(TimeEscolhido *vet, int ini, int fim, int (*comparador)(TimeEscolhido , TimeEscolhido));
 void merge_2(TimeEscolhido *vet, int ini, int meio, int fim, int (*comparador)(TimeEscolhido, TimeEscolhido));

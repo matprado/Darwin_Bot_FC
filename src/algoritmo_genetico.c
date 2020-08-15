@@ -70,6 +70,8 @@ int geracao_total;
 
 double taxa_mutacao_for = TAXA_MUT_INI_FOR;
 
+int tipo_reproducao = 0;
+
 void definir_seed(time_t seed){
     srand(seed);
 }
@@ -77,11 +79,15 @@ void definir_seed(time_t seed){
 void evolucao(){
 
     //reproduz e muta
-    elitismo(); //Seleciona o melhor individuo para transar com todos
- 
+    if(tipo_reproducao){
+        elitismo_parcial(); //Seleciona o melhor individuo para transar com todos
+    }else{
+        elitismo(); //Seleciona o melhor individuo para transar com todos
+    }
+    
     //Dinamiza a mutação e faz genocídio
     mutacao_dinamica();
-    mutacao_dinamica_delta();
+    //mutacao_dinamica_delta();
 
     //preda
     predacao();
@@ -424,8 +430,41 @@ void elitismo(){
         mutacao(i);
 
         verificar_preferencias_iguais(i);
-
     }
+}
+
+void elitismo_parcial(){
+
+    int escolhido, sorte = 0;
+
+    while((escolhido = rand() % TAM_POP) == the_bester);
+
+    for(int i=0; i<TAM_POP; i++){
+        if(i == the_bester) continue;
+        if(i == escolhido) continue;
+        
+        if(sorte % 2){
+            //Crossover:
+            crossover(i, the_bester);
+        }else{
+            //Crossover:
+            crossover(i, escolhido);
+        }
+        sorte++;
+
+        //Mutação
+        mutacao(i);
+
+        verificar_preferencias_iguais(i);
+    }
+
+    //Crossover:
+    crossover(escolhido, the_bester);
+
+    mutacao(escolhido);
+
+    verificar_preferencias_iguais(escolhido);
+
 }
 
 void crossover(int a, int b){
@@ -611,27 +650,37 @@ void mutacao(int i){
 
 
 void mutacao_dinamica(){
-    if(n_geracao>0 && besters[n_geracao] == besters[n_geracao-1]){
+    if(n_geracao>1 && besters[n_geracao-1] == besters[n_geracao-2]){
         iguais_consecutivos++;
         if(iguais_consecutivos == N_IGUAIS_CONSECUTIVOS){
-            //taxa_mutacao += SOMA_MUTACAO;
-            taxa_mutacao *= FATOR_MUTACAO;
+            tipo_reproducao = 1;
+            taxa_mutacao += SOMA_MUTACAO;
+            //taxa_mutacao_for += SOMA_MUTACAO_FOR;
+            taxa_mutacao_for *= FATOR_MUTACAO_FOR;
+            //taxa_mutacao *= FATOR_MUTACAO;
             //Taxa de Mutação chega no seu limite máximo:
             if(taxa_mutacao > LIMITE_TAXA_MUT){
                 //Reseta:
                 taxa_mutacao = TAXA_MUT_INI;
+                tipo_reproducao = 0;
                 //Genocídio:
                 if(tipo_genocidio == NUM_GEN_TOTAL-1){
+                    printf("JOOJ");
                     genocidio_total();
                 }else{
                     genocidio_parcial();
                 }
                 tipo_genocidio = (tipo_genocidio + 1) % NUM_GEN_TOTAL;
             }
+            if(taxa_mutacao_for > LIMITE_TAXA_MUT_FOR){
+                taxa_mutacao_for = TAXA_MUT_INI_FOR;
+            }
             iguais_consecutivos = 0;
         }
     }else{
+        tipo_reproducao = 0;
         taxa_mutacao = TAXA_MUT_INI;
+        taxa_mutacao_for = TAXA_MUT_INI_FOR;
         iguais_consecutivos = 0;
         tipo_genocidio = 0;
     }
@@ -935,6 +984,12 @@ void recuperar_dados_ag(){
     fclose(backup);
 
     n_geracao = 0;
+    
+    /*iguais_consecutivos = 0;
+    taxa_mutacao = TAXA_MUT_INI;
+    taxa_mutacao_for = TAXA_MUT_INI_FOR;
+    tipo_predacao = 0;
+    tipo_genocidio = 0;*/
     
     sintese.pref_gol = (int *) malloc(3 * sizeof(int));
     sintese.pref_zag = (int *) malloc(3 * sizeof(int));

@@ -3,21 +3,25 @@
 
 #include <time.h>
 
-#define TAM_POP 30
+#define TAM_POP 20
+
 #define TAXA_MUT_INI 0.05
 #define LIMITE_TAXA_MUT 1
 #define FATOR_MUTACAO 1.15
 #define SOMA_MUTACAO 0.05
-#define N_IGUAIS_CONSECUTIVOS 10
+
+#define N_IGUAIS_CONSECUTIVOS 100
 
 #define GERACOES_PREDACAO 10
 
-#define TAXA_MUT_INI_FOR 0.001
+#define TAXA_MUT_INI_FOR 0.005
 #define LIMITE_TAXA_MUT_FOR 1
 #define FATOR_MUTACAO_FOR 2
-#define DELTA 1
+#define SOMA_MUTACAO_FOR 0.05
 
-#define NUM_GEN_TOTAL 2
+#define DELTA 0.1
+
+#define NUM_GEN_TOTAL 10
 
 //Estrutura de um cromossomo(ou indivíduo)
 typedef struct cromossomo Cromossomo;
@@ -43,6 +47,8 @@ void avalia_populacao();
 void avalia_individuo(int i);
 
 void elitismo();
+
+void elitismo_parcial();
 
 void crossover();
 

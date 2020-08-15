@@ -2,7 +2,7 @@ run:
 	./bin/darwin_bot_fc
 
 all:
-	gcc ./src/cartola_utils.c ./src/algoritmo_genetico.c ./src/darwin_bot_fc.c -o ./bin/darwin_bot_fc -g -Wall
+	gcc ./src/cartola_utils.c ./src/algoritmo_genetico.c ./src/darwin_bot_fc.c -o ./bin/darwin_bot_fc -g -Wall -lm
 
 clean:
 	rm ./src/*.o

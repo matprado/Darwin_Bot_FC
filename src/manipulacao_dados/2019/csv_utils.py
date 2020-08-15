@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import csv
 
 """
@@ -115,7 +116,7 @@ writer = csv.writer(open('dados_2019.csv', 'w'))
 writer.writerows(lines)
 
 """
-
+"""
 #REMOVER TODAS AS TUPLAS COM STATUS DIFERENTE DE PROVAVEL NESSA P#:
 r = csv.reader(open('dados_2019.csv'))
 lines = list(r)
@@ -123,4 +124,31 @@ lines = list(r)
 lines2 = [l for l in lines if(l[8][0] != 'N')]
     
 writer = csv.writer(open('dados_2019.csv', 'w'))
-writer.writerows(lines2)
+writer.writerows(lines2)"""
+
+r = csv.reader(open('dados_2019.csv'))
+lines = list(r)
+for i in range(1, len(lines)):
+    if(lines[i][1] == '275'): lines[i][1] = '0' #Palmeiras
+    elif(lines[i][1] == '277'): lines[i][1] = '1' #Santos
+    elif(lines[i][1] == '276'): lines[i][1] = '2' #São Paulo
+    elif(lines[i][1] == '264'): lines[i][1] = '3' #Corinthians
+    elif(lines[i][1] == '262'): lines[i][1] = '4' #Flamengo
+    elif(lines[i][1] == '293'): lines[i][1] = '5' #Atlético PR
+    elif(lines[i][1] == '354'): lines[i][1] = '6' #Ceará
+    elif(lines[i][1] == '265'): lines[i][1] = '7' #Bahia
+    elif(lines[i][1] == '285'): lines[i][1] = '8' #Internacional
+    elif(lines[i][1] == '282'): lines[i][1] = '9' #Atlético MG
+    elif(lines[i][1] == '263'): lines[i][1] = '10' #Botafogo
+    elif(lines[i][1] == '284'): lines[i][1] = '11' #Gremio
+    elif(lines[i][1] == '266'): lines[i][1] = '12' #Fluminense
+    elif(lines[i][1] == '356'): lines[i][1] = '13' #Fortaleza
+    elif(lines[i][1] == '267'): lines[i][1] = '14' #Vasco
+    elif(lines[i][1] == '315'): lines[i][1] = '15' #Chapecoense
+    elif(lines[i][1] == '283'): lines[i][1] = '16' #Cruzeiro
+    elif(lines[i][1] == '341'): lines[i][1] = '17' #CSA
+    elif(lines[i][1] == '290'): lines[i][1] = '18' #Goias
+    elif(lines[i][1] == '314'): lines[i][1] = '19' #Avai
+
+writer = csv.writer(open('dados_2019.csv', 'w'))
+writer.writerows(lines)
