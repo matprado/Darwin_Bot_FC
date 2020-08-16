@@ -7,21 +7,21 @@
 
 #define TAXA_MUT_INI 0.05
 #define LIMITE_TAXA_MUT 1
-#define FATOR_MUTACAO 1.15
-#define SOMA_MUTACAO 0.05
+#define FATOR_MUTACAO 2
+#define SOMA_MUTACAO 0.1
 
 #define N_IGUAIS_CONSECUTIVOS 100
 
 #define GERACOES_PREDACAO 10
 
-#define TAXA_MUT_INI_FOR 0.005
+#define TAXA_MUT_INI_FOR 0.05
 #define LIMITE_TAXA_MUT_FOR 1
 #define FATOR_MUTACAO_FOR 2
 #define SOMA_MUTACAO_FOR 0.05
 
 #define DELTA 0.1
 
-#define NUM_GEN_TOTAL 10
+#define NUM_GEN_TOTAL 5
 
 //Estrutura de um cromossomo(ou indivíduo)
 typedef struct cromossomo Cromossomo;
@@ -91,5 +91,7 @@ void recuperar_dados_ag();
 void verificar_preferencias_iguais(int i);
 
 void verificar_preferencias_iguais_sintese();
+
+void testar_melhor_de_todos(int rodada, float cartoletas);
 
 #endif

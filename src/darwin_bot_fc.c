@@ -111,11 +111,14 @@ int ler_dados_campeonato(){
 int imprimir_menu_principal(){
 
     int opc;
+    int rodada;
+    float cartoletas;
 
     do{
         printf("----------------------------------------------\n");
         printf("0 - Sair;\n");
         printf("1 - Simular algoritmo evolutivo;\n");
+        printf("2 - Testar Melhor de Todos;\n");
         printf("----------------------------------------------\n");
         printf("Digite uma opção: ");
         opc = read_number();
@@ -127,6 +130,13 @@ int imprimir_menu_principal(){
                 //AG;
                 algoritmo_genetico();
                 //----------------------------------------------------------
+                break;
+            case 2:
+                printf("Digite a rodada: ");
+                scanf("%d", &rodada);
+                printf("Quantas cartoletas? : ");
+                scanf("%f", &cartoletas);
+                testar_melhor_de_todos(rodada, cartoletas);
                 break;
             default:
                 printf("Essa opção não existe!\n");

@@ -22,13 +22,22 @@ float get_pontuacao_media(int quant_pos[6], int pref_gol[3], int pref_zag[3], in
 
 float escala_campeonato(Rodada *rodadas, Atleta **atletas, int n_rodadas, int quant_pos[6], int pref_gol[3], int pref_zag[3], int pref_lat[3], int pref_mei[3], int pref_ata[3], int capitao);
 
+void escala_campeonato_rodada(int rodada, float cartoletas, int quant_pos[6], int pref_gol[3], int pref_zag[3], int pref_lat[3], int pref_mei[3], int pref_ata[3], int capitao);
+
 float escolhe_atletas_rodada(int qtd_atl, int total, Atleta **atletas, int rodada, 
     int (*comparador1)(Atleta *, Atleta *, int), 
     int (*comparador2)(Atleta *, Atleta *, int), 
     int (*comparador3)(Atleta *, Atleta *, int),
     float *cartoletas, int *faltam, float *valorizacao, int eh_capitao, TimeEscolhido *times);
 
-float escolhe_tecnico_rodada(int total, Atleta **atletas, int rodada, float *cartoletas, float *valorizacao, int eh_capitao, TimeEscolhido *times);
+float escolhe_tecnico_rodada(int total, Atleta **atletas, int rodada, float *cartoletas, float *valorizacao, TimeEscolhido *times);
+
+void escolhe_atletas_rodada_2(int qtd_atl, int total, Atleta **atletas, int rodada, 
+    int (*comparador1)(Atleta *, Atleta *, int), 
+    int (*comparador2)(Atleta *, Atleta *, int), 
+    int (*comparador3)(Atleta *, Atleta *, int),
+    float *cartoletas, int *faltam, float *valorizacao, int eh_capitao, TimeEscolhido *times);
+void escolhe_tecnico_rodada_2(int total, Atleta **atletas, int rodada, float *cartoletas, float *valorizacao, TimeEscolhido *times);
 
 int ler_csv_campeonato();
 void ler_linha_csv(FILE *csv, Rodada *rodadas, Atleta **atletas);

@@ -38,7 +38,6 @@ struct cromossomo{
     3-lat
     4-mei
     5-ata
-    6-tec
     */
 
     //Preferencia por mando de campo em cada posição
@@ -116,8 +115,8 @@ void big_bang(){
             pop[i].mando_pos[i] = rand() % 2;
         }*/
 
-        //capitao: entre 1 e 6
-        pop[i].capitao = (rand() % 6) + 1;
+        //capitao: entre 1 e 5
+        pop[i].capitao = (rand() % 5) + 1;
 
         //Define, aleatoriamente, as 3 preferências de escalação para cada posição
         pop[i].pref_gol = get_3_aleatorios_diferentes_entre(1, get_n_ids_gol());
@@ -590,11 +589,11 @@ void mutacao(int i){
     }
     definir_formacao(i, formacao);
 
-    int capitao = pop[i].capitao + converte(((rand() % 6 - 2) * taxa_mutacao_for));
+    int capitao = pop[i].capitao + converte(((rand() % 5 - 2) * taxa_mutacao_for));
     //Ajeitar Valores fora dos limites
     if(capitao < 1) capitao = (-capitao) + 2;
-    else if(capitao > 6){
-        capitao = 12 - capitao;
+    else if(capitao > 5){
+        capitao = 10 - capitao;
     }
 
     int n_gol = get_n_ids_gol(), n_zag = get_n_ids_zag(), n_lat = get_n_ids_lat(), n_mei = get_n_ids_mei(), n_ata = get_n_ids_ata();
@@ -654,10 +653,10 @@ void mutacao_dinamica(){
         iguais_consecutivos++;
         if(iguais_consecutivos == N_IGUAIS_CONSECUTIVOS){
             tipo_reproducao = 1;
-            taxa_mutacao += SOMA_MUTACAO;
+            //taxa_mutacao += SOMA_MUTACAO;
             //taxa_mutacao_for += SOMA_MUTACAO_FOR;
+            taxa_mutacao *= FATOR_MUTACAO;
             taxa_mutacao_for *= FATOR_MUTACAO_FOR;
-            //taxa_mutacao *= FATOR_MUTACAO;
             //Taxa de Mutação chega no seu limite máximo:
             if(taxa_mutacao > LIMITE_TAXA_MUT){
                 //Reseta:
@@ -773,7 +772,7 @@ void predacao_aleatoria(){
     definir_formacao(the_worst, formacao);
 
     //capitao: entre 1 e 6
-    pop[the_worst].capitao = (rand() % 6) + 1;
+    pop[the_worst].capitao = (rand() % 5) + 1;
 
 
     //Define, aleatoriamente, as 3 preferências de escalação para cada posição
@@ -804,7 +803,7 @@ void genocidio_total(){
         }*/
 
         //capitao: entre 1 e 6
-        pop[i].capitao = (rand() % 6) + 1;
+        pop[i].capitao = (rand() % 5) + 1;
 
         //Define, aleatoriamente, as 3 preferências de escalação para cada posição
         free(pop[i].pref_gol);
@@ -838,7 +837,7 @@ void genocidio_parcial(){
         }*/
 
         //capitao: entre 1 e 6
-        pop[i].capitao = (rand() % 6) + 1;
+        pop[i].capitao = (rand() % 5) + 1;
 
         //Define, aleatoriamente, as 3 preferências de escalação para cada posição
         free(pop[i].pref_gol);
@@ -1252,5 +1251,11 @@ void verificar_preferencias_iguais_sintese(){
             fator *= -1;
         }
     }
+
+}
+
+void testar_melhor_de_todos(int rodada, float cartoletas){
+
+    escala_campeonato_rodada(rodada-1, cartoletas, the_best_of_the_bester.quant_pos, the_best_of_the_bester.pref_gol, the_best_of_the_bester.pref_zag, the_best_of_the_bester.pref_lat, the_best_of_the_bester.pref_mei, the_best_of_the_bester.pref_ata, the_best_of_the_bester.capitao);
 
 }
